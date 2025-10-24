@@ -1,0 +1,43 @@
+﻿@using Project_Resturant_MVC.ViewModel
+
+@model VmCategory
+
+
+@{
+    ViewData["Title"] = "Update Menu Item";
+}
+
+<h1 class="text-center text-primary mb-4">Update Category</h1>
+
+
+
+
+<div class="container mt-4">
+    <form asp-action="Update"  method="post" class="shadow p-4 rounded bg-light">
+        <input type="hidden" name="id" value="@ViewBag.CatId" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" value="@Model.Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3">@Model.Description</textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning w-100">Update Category</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+
+

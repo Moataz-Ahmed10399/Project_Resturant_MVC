@@ -1,0 +1,79 @@
+﻿@using Project_Resturant_MVC.ViewModel
+@model VmMenuItem
+@{
+    ViewData["Title"] = "Create Menu Item";
+}
+
+<h1>Create New Menu Item</h1>
+<div class="container mt-4">
+    <h2 class="text-center text-primary mb-4">Create New Menu Item</h2>
+
+    <!-- ✅ عرض الأخطاء لو موجودة -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="Enter item name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Write a short description..."></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" type="number" step="0.01" placeholder="Enter price" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Quantity" class="form-label"></label>
+            <input asp-for="Quantity" class="form-control" type="number" placeholder="Enter available quantity" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PreparationTimeMinutes" class="form-label"></label>
+            <input asp-for="PreparationTimeMinutes" class="form-control" type="number" placeholder="e.g. 15" />
+            <span asp-validation-for="PreparationTimeMinutes" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                <option value="">-- Select Category --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <!-- ✅ الصورة -->
+        <div class="mb-3">
+            <label asp-for="ImageFile" class="form-label">Item Image *</label>
+            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" required />
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Create Item</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,79 @@
+﻿@model Project_Resturant_MVC.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container mt-4">
+
+    <h1 class="text-center text-primary mb-4">Order Details</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Customer Information</h5>
+            <p><strong>Name:</strong> @Model.CustomerName</p>
+            <p><strong>Phone:</strong> @Model.CustomerPhone</p>
+            <p><strong>Delivery Address:</strong> @Model.DeliveryAddress</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Order Summary</h5>
+            <p><strong>Subtotal:</strong> @Model.Subtotal.ToString("C")</p>
+            <p><strong>Tax:</strong> @Model.Tax.ToString("C")</p>
+            <p><strong>Discount:</strong> @Model.Discount.ToString("C")</p>
+            <p><strong>Total:</strong> <strong>@Model.Total.ToString("C")</strong></p>
+            <p>
+                <strong>Status:</strong>
+                <span class="badge @(Model.Status == Project_Resturant_MVC.Models.OrderStatus.Delivered ? "bg-success" :
+                                                           Model.Status == Project_Resturant_MVC.Models.OrderStatus.Cancelled ? "bg-danger" :
+                                                           Model.Status == Project_Resturant_MVC.Models.OrderStatus.Ready ? "bg-info" :
+                                                           "bg-warning")">
+                    @Model.Status
+                </span>
+            </p>
+            <p><strong>Type:</strong> @Model.Type</p>
+            <p><strong>Estimated Delivery:</strong> @Model.EstimatedDeliveryMinutes min</p>
+            <p><strong>Ready At:</strong> @(Model.ReadyAt?.ToString("g") ?? "-")</p>
+            <p><strong>Delivered At:</strong> @(Model.DeliveredAt?.ToString("g") ?? "-")</p>
+        </div>
+    </div>
+
+    <h2 class="mb-3">Order Items</h2>
+    @if (Model.OrderItems != null && Model.OrderItems.Any())
+    {
+        <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Menu Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.MenuItem?.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice.ToString("C")</td>
+                        <td>@item.Subtotal.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No items found in this order.</p>
+    }
+
+    <div class="mt-3">
+        <a href="/Order/GetAllOrders" class="btn btn-secondary">Back to Orders</a>
+    </div>
+
+</div>

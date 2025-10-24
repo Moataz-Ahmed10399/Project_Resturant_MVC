@@ -1,0 +1,82 @@
+﻿@model List<Order>
+
+@{
+    ViewData["Title"] = "All Orders";
+}
+
+<div class="w-100 m-0 p-0">
+    <h1 class="mb-4 text-center text-primary">All Orders</h1>
+
+    <div class="d-flex justify-content-between mb-3 px-5">
+        <a href="/Order/Create" class="btn btn-success">+ Create New Order</a>
+        <a href="/Home" class="btn btn-secondary">Back</a>
+    </div>
+
+        <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm w-100">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Subtotal</th>
+                    <th>Tax</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                    <th>Est. Delivery</th>
+                    <th>Ready At</th>
+                    <th>Delivered At</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.Id</td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.CustomerPhone</td>
+                            <td>@order.DeliveryAddress</td>
+                            <td>@order.Subtotal.ToString("C")</td>
+                            <td>@order.Tax.ToString("C")</td>
+                            <td>@order.Discount.ToString("C")</td>
+                            <td><strong>@order.Total.ToString("C")</strong></td>
+                            <td>
+                                <span class="badge
+                                @(order.Status.ToString() == "Delivered" ? "bg-success" :
+                                                                order.Status.ToString() == "Cancelled" ? "bg-danger" :
+                                                                order.Status.ToString() == "Ready" ? "bg-info" :
+                                                                "bg-warning")">
+                            @order.Status
+                        </span>
+                    </td>
+                    <td>@order.Type</td>
+                    <td>@order.EstimatedDeliveryMinutes min</td>
+                    <td>@order.ReadyAt</td>
+                    <td>@order.DeliveredAt</td>
+                    <td>@order.CreatedAt.ToShortDateString()</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="/Order/Details/@order.Id" class="btn btn-warning btn-sm">Details</a>
+                        <a href="/Order/Update/@order.Id" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="/Order/Delete/@order.Id" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                                }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="16" class="text-center text-muted">No orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+ 
+</div>

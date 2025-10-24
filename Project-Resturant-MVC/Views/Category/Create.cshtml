@@ -1,0 +1,35 @@
+﻿@using Project_Resturant_MVC.ViewModel
+@model VmCategory
+
+@{
+    ViewData["Title"] = "Create New Category";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary mb-4">Create New Category</h2>
+
+    <form asp-action="Create" class="shadow p-4 rounded bg-light">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Write a short description..."></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Create Category</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+

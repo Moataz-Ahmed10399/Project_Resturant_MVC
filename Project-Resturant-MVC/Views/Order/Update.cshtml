@@ -1,0 +1,99 @@
+﻿@using Project_Resturant_MVC.ViewModel
+@model VmOrder
+
+@{
+    ViewData["Title"] = "Update Order";
+}
+
+<h1 class="text-center text-primary mb-4">Update Order</h1>
+
+<form asp-action="Update" method="post" class="container shadow p-4 rounded bg-light">
+    <input type="hidden" name="id" value="@ViewBag.OrderId" />
+
+    <div class="mb-3">
+        <label asp-for="CustomerName" class="form-label"></label>
+        <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" />
+        <span asp-validation-for="CustomerName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CustomerPhone" class="form-label"></label>
+        <input asp-for="CustomerPhone" class="form-control" placeholder="Enter phone number" />
+        <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DeliveryAddress" class="form-label"></label>
+        <input asp-for="DeliveryAddress" class="form-control" placeholder="Enter delivery address" />
+        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label"></label>
+        <select asp-for="Type" asp-items="Model.OrderTypes" class="form-select">
+            <option value="">-- Select Order Type --</option>
+        </select>
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+
+    <h3>Order Items</h3>
+    <div id="order-items-container">
+        @for (int i = 0; i < Model.Items.Count; i++)
+        {
+            <div class="row mb-3 order-item-row">
+                <div class="col-md-6">
+                    <label asp-for="Items[i].MenuItemId" class="form-label"></label>
+                    <select asp-for="Items[i].MenuItemId" asp-items="Model.MenuItemsSelect" class="form-select"></select>
+                    <span asp-validation-for="Items[i].MenuItemId" class="text-danger"></span>
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="Items[i].Quantity" class="form-label"></label>
+                    <input asp-for="Items[i].Quantity" class="form-control" type="number" value="@Model.Items[i].Quantity" min="1" />
+                    <span asp-validation-for="Items[i].Quantity" class="text-danger"></span>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger remove-item-btn">Remove</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-secondary mb-3" id="add-item-btn">Add Item</button>
+
+    <button type="submit" class="btn btn-warning w-100">Update Order</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            var container = $("#order-items-container");
+            var menuItemsOptions = '@Html.Raw(Json.Serialize(Model.MenuItemsSelect))';
+
+            $("#add-item-btn").click(function () {
+                var index = container.children().length;
+                var newRow = `<div class="row mb-3 order-item-row">
+                                <div class="col-md-6">
+                                    <label>Menu Item</label>
+                                    <select name="Items[${index}].MenuItemId" class="form-select">${menuItemsOptions}</select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Quantity</label>
+                                    <input name="Items[${index}].Quantity" type="number" class="form-control" value="1" min="1" />
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger remove-item-btn">Remove</button>
+                                </div>
+                              </div>`;
+                container.append(newRow);
+            });
+
+            container.on("click", ".remove-item-btn", function () {
+                $(this).closest(".order-item-row").remove();
+            });
+        });
+    </script>
+}
