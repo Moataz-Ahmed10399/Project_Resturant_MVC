@@ -1,103 +1,4 @@
-﻿@* @model List<Order>
-@{
-    ViewData["Title"] = User.IsInRole("Admin") ? "All Orders" : "My Orders";
-}
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
-
-<div class="w-100 m-0 p-0">
-    <h1 class="mb-4 text-center text-primary">
-        @(User.IsInRole("Admin") ? "All Orders" : "My Orders")
-    </h1>
-
-    <div class="d-flex justify-content-between mb-3 px-5">
-        <a href="/Order/Create" class="btn btn-success">+ Create New Order</a>
-        <a href="/" class="btn btn-secondary">Back to Home</a>
-    </div>
-
-    @if (Model != null && Model.Any())
-    {
-        <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm w-100">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Customer</th>
-                    <th>Phone</th>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <th>Address</th>
-                    }
-                    <th>Subtotal</th>
-                    <th>Tax</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Type</th>
-                    <th>Est. Delivery</th>
-                    <th>Created</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model)
-                {
-                    <tr>
-                        <td>@order.Id</td>
-                        <td>@order.CustomerName</td>
-                        <td>@order.CustomerPhone</td>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <td>@order.DeliveryAddress</td>
-                        }
-                    <td>@order.Subtotal.ToString("C")</td>
-                    <td>@order.Tax.ToString("C")</td>
-                    <td><strong>@order.Total.ToString("C")</strong></td>
-                    <td>
-                        <span class="badge
-                                    @(order.Status == OrderStatus.Delivered ? "bg-success" :
-                                                                order.Status == OrderStatus.Cancelled ? "bg-danger" :
-                                                                order.Status == OrderStatus.Ready ? "bg-info" :
-                                                                "bg-warning")">
-                        @order.Status
-                    </span>
-                </td>
-                <td>@order.Type</td>
-                <td>@order.EstimatedDeliveryMinutes min</td>
-                <td>@order.CreatedAt.ToShortDateString()</td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <a href="/Order/Details/@order.Id" class="btn btn-info btn-sm">Details</a>
-
-                        @if (order.Status == OrderStatus.Pending)
-                                {
-                                    <a href="/Order/Update/@order.Id" class="btn btn-primary btn-sm">Edit</a>
-                                    <a href="/Order/Delete/@order.Id" class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Are you sure you want to cancel this order?')">
-                                        Cancel
-                                    </a>
-                                }
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div class="alert alert-info text-center">
-            <h4>No orders found</h4>
-            <p>You haven't placed any orders yet.</p>
-            <a href="/Order/Create" class="btn btn-success">Place Your First Order</a>
-        </div>
-    }
-</div> *@
+﻿
 
 @model List<Order>
 @{
@@ -123,7 +24,7 @@
     }
 
     <div class="mb-3">
-        <a href="/Order/Create" class="btn btn-success">➕ Create New Order</a>
+        <a asp-controller="Order" asp-action="Create" class="btn btn-success">➕ Create New Order</a>
     </div>
 
     @if (Model != null && Model.Any())
@@ -182,19 +83,17 @@
                         </div>
                         <div class="card-footer">
                             <div class="btn-group w-100" role="group">
-                                <a href="/Order/Details/@order.Id" class="btn btn-sm btn-info">
-                                    👁️ Details
-                                </a>
+                                <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-info">👁️ Details</a>
+
 
                                 @if (order.Status == OrderStatus.Pending)
                                 {
-                                    <a href="/Order/Update/@order.Id" class="btn btn-sm btn-primary">
-                                        ✏️ Edit
-                                    </a>
-                                    <a href="/Order/Delete/@order.Id" class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Cancel this order?')">
-                                        ❌ Cancel
-                                    </a>
+                                    <a asp-controller="Order" asp-action="Update" asp-route-id="@order.Id" class="btn btn-sm btn-primary">✏️ Edit</a>
+
+                                    <form asp-controller="Order" asp-action="Delete" asp-route-id="@order.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Cancel this order?')">❌ Cancel</button>
+                                    </form>
                                 }
                             </div>
                         </div>

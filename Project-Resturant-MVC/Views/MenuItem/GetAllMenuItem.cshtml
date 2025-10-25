@@ -336,7 +336,7 @@
     <div class="action-bar">
         @if (User.IsInRole("Admin"))
         {
-            <a href="/MenuItem/Create" class="btn-action btn-add">
+            <a asp-controller="MenuItem" asp-action="Create" class="btn-action btn-add">
                 ➕ Add New Item
             </a>
         }
@@ -344,7 +344,7 @@
         {
             <span></span>
         }
-        <a href="/" class="btn-action btn-back">
+        <a asp-controller="Home" asp-action="Index" class="btn-action btn-back">
             ⬅️ Back to Home
         </a>
     </div>
@@ -390,13 +390,16 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <div class="card-actions">
-                                <a href="/MenuItem/Update/@item.Id" class="btn-card btn-edit">
+                                <a asp-controller="MenuItem" asp-action="Update" asp-route-id="@item.Id" class="btn-card btn-edit">
                                     ✏️ Edit
                                 </a>
-                                <a href="/MenuItem/DeleteMenuItem/@item.Id" class="btn-card btn-delete"
-                                   onclick="return confirm('Delete this item?')">
-                                    🗑️ Delete
-                                </a>
+                                <form asp-controller="MenuItem" asp-action="DeleteMenuItem" asp-route-id="@item.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-card btn-delete" onclick="return confirm('Delete this item?')">
+                                        🗑️ Delete
+                                    </button>
+                                </form>
+
                             </div>
                         }
                     </div>

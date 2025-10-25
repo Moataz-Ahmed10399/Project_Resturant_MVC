@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 namespace Project_Resturant_MVC.Controllers
 {
     [Authorize(Roles = "Admin")]                 //hena hyt2ked men al cookie an fe al key ally asmo role mwgod gwah admin
+    [Route("[controller]")]
+
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -15,10 +17,14 @@ namespace Project_Resturant_MVC.Controllers
         {
             this.roleManager = roleManager;
         }
+        //[HttpGet("create")]
+
         public IActionResult AddRole()
         {
             return View();
         }
+        //[HttpPost("create")]
+
         [HttpPost]
         public async Task<IActionResult> AddRole(RoleVm rvm)
         {

@@ -310,7 +310,7 @@
     <div class="action-bar">
         @if (User.IsInRole("Admin"))
         {
-            <a href="/Category/Create" class="btn-action btn-add">
+            <a asp-controller="Category" asp-action="Create" class="btn-action btn-add">
                 ➕ Add New Category
             </a>
         }
@@ -318,7 +318,7 @@
         {
             <span></span>
         }
-        <a href="/" class="btn-action btn-back">
+        <a asp-controller="Home" asp-action="Index" class="btn-action btn-back">
             ⬅️ Back to Home
         </a>
     </div>
@@ -352,22 +352,21 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <div class="card-actions">
-                                <a href="/Category/Details/@cat.Id" class="btn-card btn-view">
-                                    👁️ View
-                                </a>
-                                <a href="/Category/Update/@cat.Id" class="btn-card btn-edit">
-                                    ✏️ Edit
-                                </a>
-                                <a href="/Category/Delete/@cat.Id" class="btn-card btn-delete"
-                                   onclick="return confirm('Delete this category?')">
-                                    🗑️ Delete
-                                </a>
+                                <a asp-controller="Category" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-sm btn-info">Details</a>
+                                <a asp-controller="Category" asp-action="Update" asp-route-id="@cat.Id" class="btn btn-sm btn-warning">Edit</a>
+
+                                <form asp-controller="Category" asp-action="Delete" asp-route-id="@cat.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+
                             </div>
+
                         }
                         else
                         {
                             <div class="card-actions">
-                                <a href="/Category/Details/@cat.Id" class="btn-card btn-view" style="grid-column: 1 / -1;">
+                                <a asp-controller="Category" asp-action="Details" asp-route-id="@cat.Id" class="btn-card btn-view" style="grid-column: 1 / -1;">
                                     👁️ View Items
                                 </a>
                             </div>
@@ -385,7 +384,7 @@
             <p>There are no categories available yet.</p>
             @if (User.IsInRole("Admin"))
             {
-                <a href="/Category/Create" class="btn-action btn-add">
+                <a asp-controller="Category" asp-action="Create" class="btn-action btn-add">
                     ➕ Add First Category
                 </a>
             }

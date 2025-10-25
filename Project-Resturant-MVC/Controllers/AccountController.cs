@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Project_Resturant_MVC.Controllers
 {
+    [Route("[controller]")]
+
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -19,12 +21,12 @@ namespace Project_Resturant_MVC.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("register")]
         public IActionResult Register()
         {
             return View();
         }
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register( RegisterUserViewModel uservm)
         {
             if (ModelState.IsValid)
@@ -34,7 +36,7 @@ namespace Project_Resturant_MVC.Controllers
                 {
                     UserName = uservm.UserName,
                     Address = uservm.Address,
-                    PasswordHash = uservm.Password
+                    //PasswordHash = uservm.Password
                 };
                 //saving in database
 
@@ -65,12 +67,13 @@ namespace Project_Resturant_MVC.Controllers
 
             return View(uservm);
         }
-   
+        [HttpGet("login")]
+
         public IActionResult Login()
         {
             return View();
         }
-        [HttpPost]
+        [HttpPost("login")]
         [ValidateAntiForgeryToken]  //بتدور علي ال __RequestVerificationToken لو لقيه مظبوط يدخله لو غلط يفكلسه عشان الحماية من ان حد من الكلاينت يتسرق 
         //لاوم تكون عند البوست طبعا 
         public async Task<IActionResult> Login( LoginUserViewModel loginvm)
@@ -114,7 +117,8 @@ namespace Project_Resturant_MVC.Controllers
             }
             return View();
         }
-         public async Task<IActionResult> SignOut()
+
+        public async Task<IActionResult> SignOut()
         {
            await signInManager.SignOutAsync();
 

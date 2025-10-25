@@ -206,7 +206,8 @@
         </div>
 
         <div class="form-container">
-            <form asp-action="Update" method="post">
+            <form asp-controller="Category" asp-action="Update" asp-route-id="@ViewBag.CatId" method="post">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@ViewBag.CatId" />
 
                 <div class="mb-4">
@@ -223,7 +224,8 @@
                     <label asp-for="Description" class="form-label">
                         📋 Description
                     </label>
-                    <textarea asp-for="Description" class="form-control" placeholder="Write a detailed description...">@Model.Description</textarea>
+
+                    <textarea asp-for="Description" class="form-control" placeholder="Write a detailed description..."></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
@@ -231,7 +233,7 @@
                     <button type="submit" class="btn-update">
                         ✅ Update Category
                     </button>
-                    <a href="/Category/GetAllCategory" class="btn-back">
+                    <a asp-controller="Category" asp-action="GetAllCategory" class="btn-back">
                         ⬅️ Back to Categories
                     </a>
                 </div>

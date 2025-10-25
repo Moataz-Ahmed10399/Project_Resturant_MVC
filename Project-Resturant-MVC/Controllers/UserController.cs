@@ -8,6 +8,8 @@ using Project_Resturant_MVC.Models;
 namespace Project_Resturant_MVC.Controllers
 {
     [Authorize(Roles = "Admin")]
+    [Route("[controller]")]
+
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -19,7 +21,8 @@ namespace Project_Resturant_MVC.Controllers
             _roleManager = roleManager;
         }
 
-        
+        [HttpGet("")]
+
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -36,7 +39,8 @@ namespace Project_Resturant_MVC.Controllers
             return View(usersWithRoles);
         }
 
- 
+        [HttpGet("changerole/{userId}")]
+
         public async Task<IActionResult> ChangeRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -54,7 +58,7 @@ namespace Project_Resturant_MVC.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("changerole")]
         public async Task<IActionResult> ChangeRole(string userId, string newRole)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -72,7 +76,7 @@ namespace Project_Resturant_MVC.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("DeleteUser/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);

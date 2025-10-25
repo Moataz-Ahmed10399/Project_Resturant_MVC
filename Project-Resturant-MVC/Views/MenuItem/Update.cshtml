@@ -225,7 +225,8 @@
         </div>
 
         <div class="form-container">
-            <form asp-action="Update" asp-route-id="@Model.CategoryId" method="post">
+            <form asp-controller="MenuItem" asp-action="Update" asp-route-id="@ViewBag.MenuItemId" method="post">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@ViewBag.MenuItemId" />
 
                 <div class="mb-4">
@@ -286,7 +287,7 @@
                     <button type="submit" class="btn-update">
                         ✅ Update Menu Item
                     </button>
-                    <a href="/MenuItem/GetAllMenuItem" class="btn-back">
+                    <a asp-controller="MenuItem" asp-action="GetAllMenuItem" class="btn-back">
                         ⬅️ Back to Menu
                     </a>
                 </div>

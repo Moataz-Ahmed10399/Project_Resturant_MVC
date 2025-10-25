@@ -42,6 +42,12 @@ namespace Project_Resturant_MVC
 
             var app = builder.Build();
 
+            app.MapControllers();
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 
             // Configure the HTTP request pipeline.

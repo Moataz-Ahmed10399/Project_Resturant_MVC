@@ -4,6 +4,8 @@ using Project_Resturant_MVC.Models;
 
 namespace Project_Resturant_MVC.Controllers
 {
+    [Route("[controller]")]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -12,16 +14,19 @@ namespace Project_Resturant_MVC.Controllers
         {
             _logger = logger;
         }
+        [HttpGet("~/")]
 
         public IActionResult Index()
         {
             return View();
         }
+        [HttpGet("privacy")]
 
         public IActionResult Privacy()
         {
             return View();
         }
+        [HttpGet("error")]
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

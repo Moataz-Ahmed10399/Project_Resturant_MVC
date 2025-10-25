@@ -1,114 +1,4 @@
-﻿@* @model List<Order>
-@{
-    ViewData["Title"] = "Kitchen Dashboard";
-}
-
-<div class="container-fluid mt-4">
-    <h1 class="text-center text-danger mb-4">🍳 Kitchen Dashboard</h1>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    <div class="row">
-        <!-- Pending Orders -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
-                    <h4>📋 Pending (@Model.Count(o => o.Status == OrderStatus.Pending))</h4>
-                </div>
-                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                    @foreach (var order in Model.Where(o => o.Status == OrderStatus.Pending))
-                    {
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <h5>Order #@order.Id</h5>
-                                <p class="mb-1"><strong>@order.CustomerName</strong></p>
-                                <p class="mb-1 text-muted small">@order.Type | @order.CreatedAt.ToString("HH:mm")</p>
-                                <p class="mb-2">
-                                    <strong>Items:</strong>
-                                    @string.Join(", ", order.OrderItems.Select(oi => $"{oi.MenuItem.Name} x{oi.Quantity}"))
-                                </p>
-                                <a href="/Order/UpdateStatus/@order.Id" class="btn btn-warning btn-sm w-100">
-                                    ➡️ Start Preparing
-                                </a>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Preparing Orders -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
-                    <h4>🔥 Preparing (@Model.Count(o => o.Status == OrderStatus.Preparing))</h4>
-                </div>
-                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                    @foreach (var order in Model.Where(o => o.Status == OrderStatus.Preparing))
-                    {
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <h5>Order #@order.Id</h5>
-                                <p class="mb-1"><strong>@order.CustomerName</strong></p>
-                                <p class="mb-1 text-muted small">
-                                    Prep Time: @order.OrderItems.Max(oi => oi.MenuItem.PreparationTimeMinutes) min
-                                </p>
-                                <p class="mb-2">
-                                    <strong>Items:</strong>
-                                    @string.Join(", ", order.OrderItems.Select(oi => $"{oi.MenuItem.Name} x{oi.Quantity}"))
-                                </p>
-                                <a href="/Order/UpdateStatus/@order.Id" class="btn btn-info btn-sm w-100">
-                                    ✅ Mark as Ready
-                                </a>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Ready Orders -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h4>✅ Ready (@Model.Count(o => o.Status == OrderStatus.Ready))</h4>
-                </div>
-                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                    @foreach (var order in Model.Where(o => o.Status == OrderStatus.Ready))
-                    {
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <h5>Order #@order.Id</h5>
-                                <p class="mb-1"><strong>@order.CustomerName</strong></p>
-                                <p class="mb-1 text-muted small">
-                                    Ready at: @order.ReadyAt?.ToString("HH:mm")
-                                </p>
-                                <p class="mb-2"><strong>@order.Type</strong></p>
-                                <a href="/Order/UpdateStatus/@order.Id" class="btn btn-success btn-sm w-100">
-                                    🚚 Mark as Delivered
-                                </a>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div> *@
+﻿
 
 
 @model List<Order>
@@ -402,9 +292,8 @@
                                     <div>• @item.MenuItem.Name × @item.Quantity</div>
                                 }
                             </div>
-                            <a href="/Order/UpdateStatus/@order.Id" class="action-btn btn-start">
-                                ▶️ Start Preparing
-                            </a>
+                            <a asp-controller="Order" asp-action="UpdateStatus" asp-route-id="@order.Id" class="action-btn btn-start">▶️ Start Preparing</a>
+
                         </div>
                     }
                 }
@@ -438,8 +327,13 @@
                             </div>
                             <div class="customer-info">
                                 <span class="customer-name">@order.CustomerName</span>
+                                @{
+                                    var prepMinutes = order.OrderItems?
+                                    .Select(oi => oi.MenuItem?.PreparationTimeMinutes ?? 0)
+                                    .DefaultIfEmpty(0).Max() ?? 0;
+                                }
                                 <span class="prep-time-badge">
-                                    ⏱️ @order.OrderItems.Max(oi => oi.MenuItem.PreparationTimeMinutes) min
+                                    ⏱️ @prepMinutes min
                                 </span>
                             </div>
                             <div class="order-items">
@@ -449,9 +343,8 @@
                                     <div>• @item.MenuItem.Name × @item.Quantity</div>
                                 }
                             </div>
-                            <a href="/Order/UpdateStatus/@order.Id" class="action-btn btn-ready">
-                                ✅ Mark as Ready
-                            </a>
+                            <a asp-controller="Order" asp-action="UpdateStatus" asp-route-id="@order.Id" class="action-btn btn-ready">✅ Mark as Ready</a>
+
                         </div>
                     }
                 }
@@ -499,9 +392,8 @@
                                     <div>• @item.MenuItem.Name × @item.Quantity</div>
                                 }
                             </div>
-                            <a href="/Order/UpdateStatus/@order.Id" class="action-btn btn-deliver">
-                                🚚 Mark as Delivered
-                            </a>
+                            <a asp-controller="Order" asp-action="UpdateStatus" asp-route-id="@order.Id" class="action-btn btn-deliver">🚚 Mark as Delivered</a>
+
                         </div>
                     }
                 }

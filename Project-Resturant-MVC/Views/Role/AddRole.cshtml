@@ -1,35 +1,4 @@
-﻿@* @model Project_Resturant_MVC.ViewModel.RoleVm
-
-@{
-    ViewData["Title"] = "AddRole";
-}
-
-<h1>AddRole</h1>
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddRole">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="RoleName" class="control-label"></label>
-                <input asp-for="RoleName" class="form-control" />
-                <span asp-validation-for="RoleName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-} *@
+﻿
 @model Project_Resturant_MVC.ViewModel.RoleVm
 @{
     ViewData["Title"] = "Add New Role";
@@ -267,10 +236,10 @@
                 <button type="submit" class="btn-create">
                     ✅ Create Role
                 </button>
-
-                <a href="/User/GetAllUsers" class="btn-back">
+                <a asp-controller="User" asp-action="GetAllUsers" class="btn-back">
                     ⬅️ Back to Users
                 </a>
+
             </form>
         </div>
     </div>

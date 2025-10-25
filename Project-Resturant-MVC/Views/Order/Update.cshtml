@@ -1,102 +1,4 @@
-﻿@* @using Project_Resturant_MVC.ViewModel
-@model VmOrder
-
-@{
-    ViewData["Title"] = "Update Order";
-}
-
-<h1 class="text-center text-primary mb-4">Update Order</h1>
-
-<form asp-action="Update" method="post" class="container shadow p-4 rounded bg-light">
-    <input type="hidden" name="id" value="@ViewBag.OrderId" />
-
-    <div class="mb-3">
-        <label asp-for="CustomerName" class="form-label"></label>
-        <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" />
-        <span asp-validation-for="CustomerName" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="CustomerPhone" class="form-label"></label>
-        <input asp-for="CustomerPhone" class="form-control" placeholder="Enter phone number" />
-        <span asp-validation-for="CustomerPhone" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="DeliveryAddress" class="form-label"></label>
-        <input asp-for="DeliveryAddress" class="form-control" placeholder="Enter delivery address" />
-        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Type" class="form-label"></label>
-        <select asp-for="Type" asp-items="Model.OrderTypes" class="form-select">
-            <option value="">-- Select Order Type --</option>
-        </select>
-        <span asp-validation-for="Type" class="text-danger"></span>
-    </div>
-
-    <h3>Order Items</h3>
-    <div id="order-items-container">
-        @for (int i = 0; i < Model.Items.Count; i++)
-        {
-            <div class="row mb-3 order-item-row">
-                <div class="col-md-6">
-                    <label asp-for="Items[i].MenuItemId" class="form-label"></label>
-                    <select asp-for="Items[i].MenuItemId" asp-items="Model.MenuItemsSelect" class="form-select"></select>
-                    <span asp-validation-for="Items[i].MenuItemId" class="text-danger"></span>
-                </div>
-                <div class="col-md-2">
-                    <label asp-for="Items[i].Quantity" class="form-label"></label>
-                    <input asp-for="Items[i].Quantity" class="form-control" type="number" value="@Model.Items[i].Quantity" min="1" />
-                    <span asp-validation-for="Items[i].Quantity" class="text-danger"></span>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-danger remove-item-btn">Remove</button>
-                </div>
-            </div>
-        }
-    </div>
-
-    <button type="button" class="btn btn-secondary mb-3" id="add-item-btn">Add Item</button>
-
-    <button type="submit" class="btn btn-warning w-100">Update Order</button>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    <script>
-        $(document).ready(function () {
-            var container = $("#order-items-container");
-            var menuItemsOptions = '@Html.Raw(Json.Serialize(Model.MenuItemsSelect))';
-
-            $("#add-item-btn").click(function () {
-                var index = container.children().length;
-                var newRow = `<div class="row mb-3 order-item-row">
-                                <div class="col-md-6">
-                                    <label>Menu Item</label>
-                                    <select name="Items[${index}].MenuItemId" class="form-select">${menuItemsOptions}</select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Quantity</label>
-                                    <input name="Items[${index}].Quantity" type="number" class="form-control" value="1" min="1" />
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button type="button" class="btn btn-danger remove-item-btn">Remove</button>
-                                </div>
-                              </div>`;
-                container.append(newRow);
-            });
-
-            container.on("click", ".remove-item-btn", function () {
-                $(this).closest(".order-item-row").remove();
-            });
-        });
-    </script>
-} *@
+﻿
 @using Project_Resturant_MVC.ViewModel
 @model VmOrder
 @{
@@ -471,7 +373,8 @@
     </div>
 
     <div class="update-card">
-        <form asp-action="Update" method="post" id="updateOrderForm">
+        <form asp-controller="Order" asp-action="Update" asp-route-id="@ViewBag.OrderId" method="post" id="updateOrderForm">
+            @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@ViewBag.OrderId" />
 
             <div class="form-section">
@@ -507,7 +410,7 @@
                 </div>
             </div>
 
-            <div class="form-section" style="background: #fff;">
+            @* <div class="form-section" style="background: #fff;">
                 <h3 class="section-title">
                     <span>🛒</span>
                     Order Items
@@ -528,171 +431,125 @@
                 <button type="button" class="btn-add-item" onclick="addOrderItem()">
                     ➕ Add Item
                 </button>
+            </div> *@
+            <div class="order-items-section" id="order-items-container">
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    <div class="order-item-row">
+                        <input type="hidden" name="Items.Index" value="@i" />
+                        <div class="item-info">
+                            <div class="item-icon">🍕</div>
+                            <div class="item-details">
+                                <label class="form-label">Menu Item</label>
+                                <select asp-for="Items[i].MenuItemId"
+                                        asp-items="Model.MenuItemsSelect"
+                                        class="form-select">
+                                    <option value="">-- Select Item --</option>
+                                </select>
+                                <span asp-validation-for="Items[i].MenuItemId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn dec">-</button>
+                            <input asp-for="Items[i].Quantity" class="qty-input" type="number" min="1" />
+                            <button type="button" class="qty-btn inc">+</button>
+                        </div>
+                        <button type="button" class="btn-remove-item remove-item-btn">🗑️</button>
+                    </div>
+                }
             </div>
 
-            <div class="form-section" style="background: #f8f9fa;">
+            <button type="button" class="btn-add-item" id="add-item-btn">
+                ➕ Add Item
+            </button>
+
+
+            @* <div class="form-section" style="background: #f8f9fa;">
                 <h3 class="section-title">
                     <span>🧾</span>
                     Order Settings
                 </h3>
 
+                <div class="info-badge">
+                    الحالة الحالية: <strong>@ViewBag.CurrentStatus</strong>
+                    <span class="ms-2 text-muted">(يتم تحديث الحالة من خلال شاشة المطبخ فقط)</span>
+                </div>
+
                 <div class="form-grid">
                     <div class="form-group-custom">
-                        <label class="form-label">
-                            📋 Order Status
-                        </label>
-                        <select name="Status" class="form-select">
-                            <option value="">-- Select Status --</option>
-                            <option value="0">⏳ Pending</option>
-                            <option value="1">👨‍🍳 Preparing</option>
-                            <option value="2">✅ Ready</option>
-                            <option value="3">🚚 Delivered</option>
-                            <option value="4">❌ Cancelled</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group-custom">
-                        <label class="form-label">
-                            🍽️ Order Type
-                        </label>
-                        <select name="Type" class="form-select">
+                        <label class="form-label">🍽️ Order Type</label>
+                        <select asp-for="Type" asp-items="Model.OrderTypes" class="form-select">
                             <option value="">-- Select Type --</option>
-                            <option value="0">🍴 Dine-In</option>
-                            <option value="1">🥡 Takeaway</option>
-                            <option value="2">🚚 Delivery</option>
                         </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
                     </div>
                 </div>
-            </div>
+            </div> *@
 
             <div class="form-section">
-                <div class="total-section">
-                    <h3>💰 Order Total</h3>
-                    <div class="total-amount" id="orderTotal">$0.00</div>
-                </div>
-
+               
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn-update">
                         ✅ Update Order
                     </button>
-                    <a href="/Order/GetAllOrders" class="btn-back">
-                        ⬅️ Back to Orders
-                    </a>
+                    <a asp-controller="Order" asp-action="GetAllOrders" class="btn-back">⬅️ Back to Orders</a>
+
                 </div>
             </div>
         </form>
     </div>
 </div>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
-        let itemCounter = 0;
-        const menuItems = @Html.Raw(Json.Serialize(ViewBag.MenuItems ?? new List<object>()));
+        let itemCounter = @Model.Items.Count;
 
-        function addOrderItem() {
-            const container = document.getElementById('orderItemsContainer');
-            const emptyMessage = document.getElementById('emptyItemsMessage');
+        document.getElementById('add-item-btn').addEventListener('click', function () {
+          const container = document.getElementById('order-items-container');
+          const index = itemCounter++;
 
-            if (emptyMessage) {
-                emptyMessage.style.display = 'none';
-            }
+          const firstSelect = container.querySelector('select[name="Items[0].MenuItemId"]');
+          const optionsHtml = firstSelect ? firstSelect.innerHTML : '<option value="">-- Select Item --</option>';
 
-            const itemHtml = `
-                <div class="order-item-row" id="item-${itemCounter}">
-                    <div class="item-info">
-                        <div class="item-icon">🍕</div>
-                        <div class="item-details">
-                            <select name="OrderItems[${itemCounter}].MenuItemId" class="form-select" onchange="updateItemInfo(${itemCounter})" required>
-                                <option value="">-- Select Menu Item --</option>
-                                ${menuItems.map(item => `<option value="${item.id}" data-price="${item.price}" data-name="${item.name}">${item.name} - $${item.price}</option>`).join('')}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn" onclick="decreaseQty(${itemCounter})">-</button>
-                        <input type="number" name="OrderItems[${itemCounter}].Quantity" class="qty-input" value="1" min="1" onchange="calculateTotal()" required />
-                        <button type="button" class="qty-btn" onclick="increaseQty(${itemCounter})">+</button>
-                    </div>
-                    <div class="price-display">
-                        <span class="unit-price">Unit: $<span id="unit-price-${itemCounter}">0.00</span></span>
-                        <span class="subtotal-price">$<span id="subtotal-${itemCounter}">0.00</span></span>
-                    </div>
-                    <button type="button" class="btn-remove-item" onclick="removeItem(${itemCounter})">🗑️</button>
-                </div>
-            `;
+          const row = document.createElement('div');
+          row.classList.add('order-item-row');
+          row.innerHTML = `
+            <input type="hidden" name="Items.Index" value="${index}" />
+            <div class="item-info">
+              <div class="item-icon">🍕</div>
+              <div class="item-details">
+                <label class="form-label">Menu Item</label>
+                <select name="Items[${index}].MenuItemId" class="form-select">
+                  ${optionsHtml}
+                </select>
+                <span class="text-danger small field-validation-valid" data-valmsg-for="Items[${index}].MenuItemId" data-valmsg-replace="true"></span>
+              </div>
+            </div>
+            <div class="quantity-control">
+              <button type="button" class="qty-btn dec">-</button>
+              <input name="Items[${index}].Quantity" class="qty-input" type="number" value="1" min="1" />
+              <button type="button" class="qty-btn inc">+</button>
+            </div>
+            <button type="button" class="btn-remove-item remove-item-btn">🗑️</button>
+          `;
+          container.appendChild(row);
+        });
 
-            container.insertAdjacentHTML('beforeend', itemHtml);
-            itemCounter++;
-        }
-
-        function updateItemInfo(index) {
-            const select = document.querySelector(`select[name="OrderItems[${index}].MenuItemId"]`);
-            const selectedOption = select.options[select.selectedIndex];
-            const price = parseFloat(selectedOption.getAttribute('data-price') || 0);
-
-            document.getElementById(`unit-price-${index}`).textContent = price.toFixed(2);
-            calculateTotal();
-        }
-
-        function increaseQty(index) {
-            const input = document.querySelector(`input[name="OrderItems[${index}].Quantity"]`);
-            input.value = parseInt(input.value) + 1;
-            calculateTotal();
-        }
-
-        function decreaseQty(index) {
-            const input = document.querySelector(`input[name="OrderItems[${index}].Quantity"]`);
-            if (parseInt(input.value) > 1) {
-                input.value = parseInt(input.value) - 1;
-                calculateTotal();
-            }
-        }
-
-        function removeItem(index) {
-            const item = document.getElementById(`item-${index}`);
-            item.remove();
-            calculateTotal();
-
-            // Check if no items left
-            const container = document.getElementById('orderItemsContainer');
-            if (container.querySelectorAll('.order-item-row').length === 0) {
-                document.getElementById('emptyItemsMessage').style.display = 'block';
-            }
-        }
-
-        function calculateTotal() {
-            let total = 0;
-
-            document.querySelectorAll('.order-item-row').forEach((row, index) => {
-                const select = row.querySelector('select[name^="OrderItems"]');
-                const qtyInput = row.querySelector('input[name$=".Quantity"]');
-
-                if (select && select.selectedIndex > 0) {
-                    const price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price') || 0);
-                    const qty = parseInt(qtyInput.value) || 0;
-                    const subtotal = price * qty;
-
-                    const subtotalSpan = row.querySelector('.subtotal-price span');
-                    if (subtotalSpan) {
-                        subtotalSpan.textContent = subtotal.toFixed(2);
-                    }
-
-                    total += subtotal;
-                }
-            });
-
-            document.getElementById('orderTotal').textContent = '$' + total.toFixed(2);
-        }
-
-        // Initialize with one item
-        window.addEventListener('DOMContentLoaded', function() {
-            if (menuItems.length > 0) {
-                addOrderItem();
-            }
+        document.addEventListener('click', function (e) {
+          if (e.target.classList.contains('inc')) {
+            const input = e.target.closest('.order-item-row').querySelector('input[name$=".Quantity"]');
+            input.value = (parseInt(input.value) || 1) + 1;
+          }
+          if (e.target.classList.contains('dec')) {
+            const input = e.target.closest('.order-item-row').querySelector('input[name$=".Quantity"]');
+            const v = parseInt(input.value) || 1;
+            input.value = v > 1 ? v - 1 : 1;
+          }
+          if (e.target.classList.contains('remove-item-btn')) {
+            e.target.closest('.order-item-row').remove();
+          }
         });
     </script>
 }

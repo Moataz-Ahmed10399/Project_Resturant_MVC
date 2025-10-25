@@ -8,6 +8,8 @@ using Project_Resturant_MVC.ViewModel;
 
 namespace Project_Resturant_MVC.Controllers
 {
+    [Route("[controller]")]
+
     public class MenuItemController : Controller
     {
         private readonly ResturantDbContext _Context;
@@ -18,19 +20,21 @@ namespace Project_Resturant_MVC.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("")]
         public async Task<IActionResult> GetAllMenuItem()
         {
             var items = await _Context.MenuItems
-                .Include(m => m.Category) 
-                //.Where(m => m.IsAvailable)
+                .Include(m => m.Category)
+                .Where(m => !m.IsDeleted)
                 .ToListAsync();
             
             return View(items);
         }
         [Authorize(Roles = "Admin")]
+        [HttpGet("create")]
         public async Task<IActionResult> Create()
         {
-            var cat = await _Context.Categories.ToListAsync();
+            var cat = await _Context.Categories.Where(c => !c.IsDeleted).ToListAsync();
 
             VmMenuItem vmMenuItem = new VmMenuItem()
             {
@@ -40,7 +44,7 @@ namespace Project_Resturant_MVC.Controllers
 
             return View(vmMenuItem);
         }
-        [HttpPost]
+        [HttpPost("create")]
         [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> Create(VmMenuItem vmMenuItem)
@@ -66,7 +70,8 @@ namespace Project_Resturant_MVC.Controllers
                 CategoryId = vmMenuItem.CategoryId,
                 Price = vmMenuItem.Price,
                 PreparationTimeMinutes = vmMenuItem.PreparationTimeMinutes,
-                Quantity = vmMenuItem.Quantity
+                Quantity = vmMenuItem.Quantity,
+                 IsAvailable = vmMenuItem.Quantity > 0
             };
                 
             await _Context.MenuItems.AddAsync(mitem);
@@ -78,10 +83,13 @@ namespace Project_Resturant_MVC.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet("update/{id:int}")]
 
         public async Task<IActionResult> Update(int id)
         {
             var MenuItem = await _Context.MenuItems.FindAsync(id);
+            if (MenuItem == null || MenuItem.IsDeleted) return NotFound();
+
             var vmmenitem = new VmMenuItem
             {
                 Categories = await GetAllCategories(),
@@ -98,10 +106,16 @@ namespace Project_Resturant_MVC.Controllers
             return View(vmmenitem);
         }
 
-        [HttpPost]
+        [HttpPost("update/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, VmMenuItem vmMenuItem)
         {
+
+
+            var item = await _Context.MenuItems.FindAsync(id);
+            if (item == null || item.IsDeleted) return NotFound();
+
+
             if (!ModelState.IsValid)
             {
                 vmMenuItem.Categories= await GetAllCategories();
@@ -110,13 +124,12 @@ namespace Project_Resturant_MVC.Controllers
             }
             if (await _Context.MenuItems.AnyAsync(c => c.Name == vmMenuItem.Name && c.Id != id))
             {
-                ModelState.AddModelError("Name", "A category with this name already exists.");
+                ModelState.AddModelError("Name", "A menu item with this name already exists.");
                 vmMenuItem.Categories = await GetAllCategories();
                 ViewBag.MenuItemId = id;
 
                 return View(vmMenuItem);
             }
-            var item = await _Context.MenuItems.FindAsync(id);
 
             item.Name = vmMenuItem.Name;
             item.Description = vmMenuItem.Description;
@@ -124,7 +137,7 @@ namespace Project_Resturant_MVC.Controllers
             item.Quantity = vmMenuItem.Quantity;
             item.PreparationTimeMinutes = vmMenuItem.PreparationTimeMinutes;
             item.CategoryId = vmMenuItem.CategoryId;
-            
+            item.IsAvailable = item.Quantity > 0;
             await _Context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Menu item updated successfully!";
@@ -132,10 +145,12 @@ namespace Project_Resturant_MVC.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-
+        [HttpPost("deletemenuitem/{id:int}")]
         public async Task<IActionResult> DeleteMenuItem(int id )
         {
             var item = await _Context.MenuItems.FindAsync(id);
+            if (item == null) return NotFound();
+
             item.IsDeleted = true;
 
             await _Context.SaveChangesAsync();
@@ -145,7 +160,7 @@ namespace Project_Resturant_MVC.Controllers
 
         public async Task<SelectList> GetAllCategories()
         {
-            var cat = await _Context.Categories.ToListAsync();
+            var cat = await _Context.Categories.Where(c => !c.IsDeleted).ToListAsync();
             return new SelectList(cat, "Id", "Name");
 
         }

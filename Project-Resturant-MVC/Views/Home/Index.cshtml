@@ -192,9 +192,8 @@
             {
                 @if (User.IsInRole("Client"))
                 {
-                    <a href="/MenuItem/GetAllMenuItem" class="btn-hero btn-primary-hero">
-                        🍕 Browse Menu
-                    </a>
+                    <a asp-controller="MenuItem" asp-action="GetAllMenuItem" class="btn-hero btn-primary-hero">🍕 Menu</a>
+                   
                     <a href="/Order/Create" class="btn-hero btn-secondary-hero">
                         ➕ Place Order
                     </a>
