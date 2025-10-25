@@ -1,34 +1,64 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project_Resturant_MVC.Context;
 using Project_Resturant_MVC.Models;
 using Project_Resturant_MVC.ViewModel;
+using System.Security.Claims;
 
 namespace Project_Resturant_MVC.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly ResturantDbContext _Context;
 
         public OrderController(ResturantDbContext context)
         {
-            //_Context = new ResturantDbContext();   // ليه هنا معملنها في ال براميتر 
             _Context = context;
         }
 
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> GetAllOrders()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var orders = await _Context.Orders
-                .Include(O=>O.OrderItems)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+                .Where(o => o.UserId == userId && !o.IsDeleted)
+                .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
+
             return View(orders);
         }
+        //public async Task<IActionResult> GetAllOrders()
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+        //    IQueryable<Order> ordersQuery = _Context.Orders
+        //        .Include(o => o.OrderItems)
+        //        .ThenInclude(oi => oi.MenuItem);
+
+        //    if (!User.IsInRole("Admin"))
+        //    {
+        //        ordersQuery = ordersQuery.Where(o => o.UserId == userId);
+        //    }
+
+        //    var orders = await ordersQuery
+        //        .OrderByDescending(o => o.CreatedAt)
+        //        .ToListAsync();
+
+        //    return View(orders);
+        //}
+
+    
         public async Task<IActionResult> Create()
         {
-            var menuItems = await _Context.MenuItems.ToListAsync();
+            var menuItems = await _Context.MenuItems
+                .Where(m => m.IsAvailable)
+                .ToListAsync();
 
             var vm = new VmOrder
             {
@@ -38,26 +68,53 @@ namespace Project_Resturant_MVC.Controllers
 
             vm.Items.Add(new VmOrderItem { Quantity = 1 });
 
-
             return View(vm);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Create(VmOrder vmOrder)
         {
+            if (vmOrder.Type == OrderType.Delivery && string.IsNullOrWhiteSpace(vmOrder.DeliveryAddress))
+            {
+                ModelState.AddModelError("DeliveryAddress", "Delivery address is required for delivery orders.");
+            }
+
             if (!ModelState.IsValid)
             {
-                var menuItems = await _Context.MenuItems.ToListAsync();
+                var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable).ToListAsync();
                 vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
                 vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
 
-                // إذا Items فارغة أو null، أضف عنصر واحد على الأقل
                 if (vmOrder.Items == null || !vmOrder.Items.Any())
                     vmOrder.Items.Add(new VmOrderItem { Quantity = 1 });
 
                 return View(vmOrder);
             }
+
+            foreach (var item in vmOrder.Items)
+            {
+                var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
+
+                if (menuItem == null)
+                {
+                    ModelState.AddModelError("", $"Menu item with ID {item.MenuItemId} not found.");
+                    return await ReloadCreateView(vmOrder);
+                }
+
+                if (!menuItem.IsAvailable)
+                {
+                    ModelState.AddModelError("", $"{menuItem.Name} is currently unavailable.");
+                    return await ReloadCreateView(vmOrder);
+                }
+
+                if (menuItem.Quantity < item.Quantity)
+                {
+                    ModelState.AddModelError("", $"Only {menuItem.Quantity} of {menuItem.Name} available.");
+                    return await ReloadCreateView(vmOrder);
+                }
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var order = new Order
             {
@@ -66,17 +123,16 @@ namespace Project_Resturant_MVC.Controllers
                 DeliveryAddress = vmOrder.DeliveryAddress,
                 Status = OrderStatus.Pending,
                 Type = vmOrder.Type,
-                Subtotal = 0,
-                Tax = 0,
-                Discount = 0,
-                Total = 0,
-                OrderItems = new List<OrderItem>() // << مهم جداً
+                UserId = userId, 
+                OrderItems = new List<OrderItem>()
             };
+
+            decimal subtotal = 0;
+            int maxPrepTime = 0;
 
             foreach (var item in vmOrder.Items)
             {
                 var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
-                //if (menuItem == null) continue; 
 
                 order.OrderItems.Add(new OrderItem
                 {
@@ -85,15 +141,31 @@ namespace Project_Resturant_MVC.Controllers
                     UnitPrice = menuItem.Price,
                     Subtotal = item.Quantity * menuItem.Price
                 });
+
+                subtotal += item.Quantity * menuItem.Price;
+                menuItem.Quantity -= item.Quantity;
+
+                if (menuItem.Quantity == 0)
+                {
+                    menuItem.IsAvailable = false;
+                }
+
+                if (menuItem.PreparationTimeMinutes > maxPrepTime)
+                {
+                    maxPrepTime = menuItem.PreparationTimeMinutes;
+                }
             }
 
-            order.Subtotal = order.OrderItems.Sum(i => i.Subtotal);
+            order.Subtotal = subtotal;
+            order.Tax = subtotal * 0.085m;
+            order.Discount = 0;
             order.Total = order.Subtotal + order.Tax - order.Discount;
+            order.EstimatedDeliveryMinutes = maxPrepTime + 30;
 
             await _Context.Orders.AddAsync(order);
             await _Context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Order created successfully!";
+            TempData["SuccessMessage"] = $"Order #{order.Id} created successfully! Estimated delivery: {order.EstimatedDeliveryMinutes} minutes.";
             return RedirectToAction("GetAllOrders");
         }
 
@@ -106,7 +178,22 @@ namespace Project_Resturant_MVC.Controllers
             if (order == null)
                 return NotFound();
 
-            var menuItems = await _Context.MenuItems.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!User.IsInRole("Admin") && order.UserId != userId)
+            {
+                TempData["ErrorMessage"] = "You can only edit your own orders.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            if (order.Status == OrderStatus.Ready || order.Status == OrderStatus.Delivered)
+            {
+                TempData["ErrorMessage"] = "Cannot edit orders that are Ready or Delivered.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            var menuItems = await _Context.MenuItems
+                .Where(m => m.IsAvailable)
+                .ToListAsync();
 
             var vm = new VmOrder
             {
@@ -122,42 +209,78 @@ namespace Project_Resturant_MVC.Controllers
                 MenuItemsSelect = new SelectList(menuItems, "Id", "Name"),
                 OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)))
             };
+
             ViewBag.OrderId = id;
             return View(vm);
         }
+
         [HttpPost]
         public async Task<IActionResult> Update(int id, VmOrder vmOrder)
         {
-            if (!ModelState.IsValid)
-            {
-                var menuItems = await _Context.MenuItems.ToListAsync();
-                vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
-                vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
-                ViewBag.OrderId = id;
-
-                // لو الـ Items مش موجودة أو فاضية، أرجع عنصر واحد على الأقل
-                if (vmOrder.Items == null || !vmOrder.Items.Any())
-                    vmOrder.Items = new List<VmOrderItem> { new VmOrderItem { Quantity = 1 } };
-
-                return View(vmOrder);
-            }
-
             var order = await _Context.Orders
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null) return NotFound();
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!User.IsInRole("Admin") && order.UserId != userId)
+            {
+                TempData["ErrorMessage"] = "You can only edit your own orders.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            if (order.Status == OrderStatus.Ready || order.Status == OrderStatus.Delivered)
+            {
+                TempData["ErrorMessage"] = "Cannot edit orders that are Ready or Delivered.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            if (vmOrder.Type == OrderType.Delivery && string.IsNullOrWhiteSpace(vmOrder.DeliveryAddress))
+            {
+                ModelState.AddModelError("DeliveryAddress", "Delivery address is required for delivery orders.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable).ToListAsync();
+                vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
+                vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
+                ViewBag.OrderId = id;
+
+                if (vmOrder.Items == null || !vmOrder.Items.Any())
+                    vmOrder.Items = new List<VmOrderItem> { new VmOrderItem { Quantity = 1 } };
+
+                return View(vmOrder);
+            }
+
+            foreach (var oldItem in order.OrderItems)
+            {
+                var menuItem = await _Context.MenuItems.FindAsync(oldItem.MenuItemId);
+                menuItem.Quantity += oldItem.Quantity;
+                menuItem.IsAvailable = true;
+            }
+
             order.CustomerName = vmOrder.CustomerName;
             order.CustomerPhone = vmOrder.CustomerPhone;
             order.DeliveryAddress = vmOrder.DeliveryAddress;
             order.Type = vmOrder.Type;
 
-            // تحديث الـ OrderItems
             order.OrderItems.Clear();
+            decimal subtotal = 0;
+            int maxPrepTime = 0;
+
             foreach (var item in vmOrder.Items)
             {
                 var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
+
+                if (!menuItem.IsAvailable || menuItem.Quantity < item.Quantity)
+                {
+                    ModelState.AddModelError("", $"{menuItem.Name} is unavailable or insufficient quantity.");
+                    ViewBag.OrderId = id;
+                    return await ReloadUpdateView(vmOrder, id);
+                }
+
                 order.OrderItems.Add(new OrderItem
                 {
                     MenuItemId = item.MenuItemId,
@@ -165,10 +288,25 @@ namespace Project_Resturant_MVC.Controllers
                     UnitPrice = menuItem.Price,
                     Subtotal = item.Quantity * menuItem.Price
                 });
+
+                subtotal += item.Quantity * menuItem.Price;
+                menuItem.Quantity -= item.Quantity;
+
+                if (menuItem.Quantity == 0)
+                {
+                    menuItem.IsAvailable = false;
+                }
+
+                if (menuItem.PreparationTimeMinutes > maxPrepTime)
+                {
+                    maxPrepTime = menuItem.PreparationTimeMinutes;
+                }
             }
 
-            order.Subtotal = order.OrderItems.Sum(i => i.Subtotal);
+            order.Subtotal = subtotal;
+            order.Tax = subtotal * 0.085m;
             order.Total = order.Subtotal + order.Tax - order.Discount;
+            order.EstimatedDeliveryMinutes = maxPrepTime + 30;
 
             await _Context.SaveChangesAsync();
 
@@ -176,14 +314,13 @@ namespace Project_Resturant_MVC.Controllers
             return RedirectToAction("GetAllOrders");
         }
 
-
-
-        public async Task<IActionResult> Details(int id)
+     
+        [Authorize(Roles = "Kitchen")] 
+        public async Task<IActionResult> UpdateStatus(int id)
         {
-            // جلب الطلب مع العناصر المرتبطة به
             var order = await _Context.Orders
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.MenuItem) // لو عايزين نجيب اسم المنيو آيتم لكل OrderItem
+                .ThenInclude(oi => oi.MenuItem)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
@@ -192,18 +329,157 @@ namespace Project_Resturant_MVC.Controllers
             return View(order);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+        [Authorize(Roles = "Kitchen")] 
+        public async Task<IActionResult> UpdateStatus(int id, OrderStatus newStatus)
         {
-            var orderdeleted = await _Context.Orders.FindAsync(id);
-            orderdeleted.IsDeleted = true;
+            var order = await _Context.Orders.FindAsync(id);
+
+            if (order == null)
+                return NotFound();
+
+            if (newStatus < order.Status)
+            {
+                TempData["ErrorMessage"] = "Cannot move order backwards in status.";
+                return RedirectToAction("KitchenDashboard");
+            }
+
+            if (order.Status == OrderStatus.Delivered || order.Status == OrderStatus.Cancelled)
+            {
+                TempData["ErrorMessage"] = "Cannot update completed or cancelled orders.";
+                return RedirectToAction("KitchenDashboard");
+            }
+
+            order.Status = newStatus;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            if (newStatus == OrderStatus.Ready && order.ReadyAt == null)
+            {
+                order.ReadyAt = DateTime.UtcNow;
+            }
+
+            if (newStatus == OrderStatus.Delivered && order.DeliveredAt == null)
+            {
+                order.DeliveredAt = DateTime.UtcNow;
+            }
 
             await _Context.SaveChangesAsync();
-            return RedirectToAction("GetAllOrders");
+
+            TempData["SuccessMessage"] = $"Order #{id} status updated to {newStatus}";
+            return RedirectToAction("KitchenDashboard");
         }
 
        
+        [Authorize(Roles = "Kitchen")] 
+        public async Task<IActionResult> KitchenDashboard()
+        {
+            var orders = await _Context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+                .Where(o => o.Status != OrderStatus.Delivered &&
+                            o.Status != OrderStatus.Cancelled &&
+                            !o.IsDeleted)
+                .OrderBy(o => o.CreatedAt)
+                .ToListAsync();
+
+            return View(orders);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminOrdersDashboard()
+        {
+            var orders = await _Context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.User)
+                .Where(o => !o.IsDeleted)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            ViewBag.PendingCount = orders.Count(o => o.Status == OrderStatus.Pending);
+            ViewBag.PreparingCount = orders.Count(o => o.Status == OrderStatus.Preparing);
+            ViewBag.ReadyCount = orders.Count(o => o.Status == OrderStatus.Ready);
+            ViewBag.DeliveredCount = orders.Count(o => o.Status == OrderStatus.Delivered);
+            ViewBag.TotalRevenue = orders.Where(o => o.Status == OrderStatus.Delivered)
+                                          .Sum(o => o.Total);
+
+            return View(orders);
+        }
 
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var order = await _Context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
+            if (order == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!User.IsInRole("Admin") && order.UserId != userId)
+            {
+                TempData["ErrorMessage"] = "You can only view your own orders.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            return View(order);
+        }
+
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await _Context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!User.IsInRole("Admin") && order.UserId != userId)
+            {
+                TempData["ErrorMessage"] = "You can only delete your own orders.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            if (order.Status == OrderStatus.Ready || order.Status == OrderStatus.Delivered)
+            {
+                TempData["ErrorMessage"] = "Cannot delete orders that are Ready or Delivered.";
+                return RedirectToAction("GetAllOrders");
+            }
+
+            foreach (var item in order.OrderItems)
+            {
+                var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
+                menuItem.Quantity += item.Quantity;
+                menuItem.IsAvailable = true;
+            }
+
+            order.IsDeleted = true;
+            await _Context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Order cancelled and stock restored.";
+            return RedirectToAction("GetAllOrders");
+        }
+
+    
+        private async Task<IActionResult> ReloadCreateView(VmOrder vmOrder)
+        {
+            var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable).ToListAsync();
+            vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
+            vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
+            return View("Create", vmOrder);
+        }
+
+        private async Task<IActionResult> ReloadUpdateView(VmOrder vmOrder, int orderId)
+        {
+            var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable).ToListAsync();
+            vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
+            vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
+            ViewBag.OrderId = orderId;
+            return View("Update", vmOrder);
+        }
     }
 }

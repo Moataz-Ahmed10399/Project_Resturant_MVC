@@ -1,44 +1,43 @@
 ﻿@using Project_Resturant_MVC.ViewModel
 @model VmMenuItem
+
 @{
     ViewData["Title"] = "Update Menu Item";
 }
 
 <h1 class="text-center text-primary mb-4">Update Menu Item</h1>
+
 <div class="container mt-4">
-
-    <form asp-action="Update" method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
-
+    <form asp-action="Update" asp-route-id="@Model.CategoryId" method="post" class="shadow p-4 rounded bg-light">
         <input type="hidden" name="id" value="@ViewBag.MenuItemId" />
-        <input type="hidden" asp-for="ImageUrl" />
 
         <div class="mb-3">
             <label asp-for="Name" class="form-label"></label>
-            <input asp-for="Name" class="form-control" />
+            <input asp-for="Name" class="form-control" value="@Model.Name" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <textarea asp-for="Description" class="form-control" rows="3">@Model.Description</textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Price" class="form-label"></label>
-            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+            <input asp-for="Price" class="form-control" type="number" step="0.01" value="@Model.Price" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Quantity" class="form-label"></label>
-            <input asp-for="Quantity" class="form-control" type="number" />
+            <input asp-for="Quantity" class="form-control" type="number" value="@Model.Quantity" />
             <span asp-validation-for="Quantity" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="PreparationTimeMinutes" class="form-label"></label>
-            <input asp-for="PreparationTimeMinutes" class="form-control" type="number" />
+            <input asp-for="PreparationTimeMinutes" class="form-control" type="number" value="@Model.PreparationTimeMinutes" />
             <span asp-validation-for="PreparationTimeMinutes" class="text-danger"></span>
         </div>
 
@@ -50,25 +49,6 @@
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
 
-        <!-- ✅ عرض الصورة الحالية -->
-        @if (!string.IsNullOrEmpty(Model.ImageUrl))
-        {
-            <div class="mb-3">
-                <label class="form-label">Current Image</label>
-                <div>
-                    <img src="@Model.ImageUrl" alt="Current Image" class="img-thumbnail" style="max-width: 200px;" />
-                </div>
-            </div>
-        }
-
-        <!-- ✅ رفع صورة جديدة (اختياري) -->
-        <div class="mb-3">
-            <label asp-for="ImageFile" class="form-label">New Image (Optional)</label>
-            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
-            <span asp-validation-for="ImageFile" class="text-danger"></span>
-            <small class="text-muted">Leave empty to keep current image</small>
-        </div>
-
         <button type="submit" class="btn btn-warning w-100">Update Item</button>
     </form>
 </div>
@@ -78,3 +58,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

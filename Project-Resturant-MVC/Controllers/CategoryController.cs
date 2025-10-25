@@ -16,20 +16,20 @@ namespace Project_Resturant_MVC.Controllers
             _Context = context;
         }
 
-
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllCategory()
         {
             var cat = await _Context.Categories.ToListAsync();
 
             return View(cat);
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create ()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create (VmCategory vmcat )
         {
@@ -58,7 +58,7 @@ namespace Project_Resturant_MVC.Controllers
             return RedirectToAction("GetAllCategory");
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult>Update(int id)
         {
             var cat = await _Context.Categories.FindAsync(id);
@@ -71,7 +71,7 @@ namespace Project_Resturant_MVC.Controllers
             return View(vmcat);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
 
         [HttpPost]
         public async Task<IActionResult> Update(int id, VmCategory vmcat)
@@ -101,6 +101,7 @@ namespace Project_Resturant_MVC.Controllers
             return RedirectToAction("GetAllCategory");
 
         }
+        [AllowAnonymous]
 
         public async Task<IActionResult> Details(int id)
         {
@@ -111,7 +112,7 @@ namespace Project_Resturant_MVC.Controllers
 
             return View(category);
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> Delete(int id)
         {

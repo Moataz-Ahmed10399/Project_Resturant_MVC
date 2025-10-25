@@ -39,5 +39,9 @@ namespace Project_Resturant_MVC.Models
 
         // Navigation Property
         public ICollection<OrderItem> OrderItems { get; set; }
+        public string? UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public ApplicationUser? User { get; set; }
     }
 }

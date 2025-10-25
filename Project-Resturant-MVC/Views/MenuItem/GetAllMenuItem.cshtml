@@ -2,28 +2,37 @@
 @{
     ViewData["Title"] = "All Menu Items";
 }
-
 <div class="w-100 m-0 p-0">
-    <h1 class="mb-4 text-center text-primary">All Menu Items</h1>
+    <h1 class="mb-4 text-center text-primary">🍕 Menu Items</h1>
 
     <div class="d-flex justify-content-between mb-3 px-5">
-        <a href="/MenuItem/Create" class="btn btn-success">+ Add New Item</a>
-        <a href="/Home" class="btn btn-secondary">Back</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/MenuItem/Create" class="btn btn-success">+ Add New Item</a>
+        }
+        else
+        {
+            <span></span> 
+        }
+        <a href="/" class="btn btn-secondary">Back</a>
     </div>
 
     <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm w-100">
         <thead class="table-dark">
             <tr>
                 <th>#</th>
-                <th>Image</th> 
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Quantity</th> 
                 <th>Prep Time (min)</th>
                 <th>Available</th>
                 <th>Category</th>
-                <th>Created</th>
-                <th>Actions</th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th>Created</th>
+                    <th>Actions</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -33,22 +42,14 @@
                 {
                     <tr>
                         <td>@item.Id</td>
-
-                       
-                        <td>
-                            @if (!string.IsNullOrEmpty(item.ImageUrl))
-                            {
-                                <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" />
-                            }
-                            else
-                            {
-                                <span class="text-muted">No Image</span>
-                            }
-                        </td>
-
                         <td>@item.Name</td>
                         <td>@item.Description</td>
                         <td>@item.Price.ToString("C")</td>
+                        <td>
+                            <span class="badge @(item.Quantity > 0 ? "bg-success" : "bg-danger")">
+                                @item.Quantity
+                            </span>
+                        </td>
                         <td>@item.PreparationTimeMinutes</td>
                         <td>
                             <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
@@ -56,20 +57,26 @@
                             </span>
                         </td>
                         <td>@item.Category?.Name</td>
-                        <td>@item.CreatedAt.ToShortDateString()</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="/MenuItem/Update/@item.Id" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="/MenuItem/DeleteMenuItem/@item.Id" class="btn btn-danger btn-sm">Delete</a>
-                            </div>
-                        </td>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <td>@item.CreatedAt.ToShortDateString()</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="/MenuItem/Update/@item.Id" class="btn btn-primary btn-sm">Edit</a>
+                                    <a href="/MenuItem/DeleteMenuItem/@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                                </div>
+                            </td>
+                        }
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="10" class="text-center text-muted">No menu items found.</td>
+                    <td colspan="@(User.IsInRole("Admin") ? "10" : "8")" class="text-center text-muted">
+                        No menu items found.
+                    </td>
                 </tr>
             }
         </tbody>

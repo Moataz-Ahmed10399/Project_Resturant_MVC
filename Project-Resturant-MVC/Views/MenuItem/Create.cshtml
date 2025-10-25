@@ -1,28 +1,18 @@
 ﻿@using Project_Resturant_MVC.ViewModel
 @model VmMenuItem
+
+
 @{
-    ViewData["Title"] = "Create Menu Item";
+    ViewData["Title"] = "All Menu Items";
 }
 
 <h1>Create New Menu Item</h1>
+
 <div class="container mt-4">
+  
     <h2 class="text-center text-primary mb-4">Create New Menu Item</h2>
 
-    <!-- ✅ عرض الأخطاء لو موجودة -->
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            <ul>
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <li>@error.ErrorMessage</li>
-                }
-            </ul>
-        </div>
-    }
-
-    <form asp-action="Create" method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
-
+    <form asp-action="Create" class="shadow p-4 rounded bg-light">
         <div class="mb-3">
             <label asp-for="Name" class="form-label"></label>
             <input asp-for="Name" class="form-control" placeholder="Enter item name" />
@@ -59,13 +49,6 @@
                 <option value="">-- Select Category --</option>
             </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-
-        <!-- ✅ الصورة -->
-        <div class="mb-3">
-            <label asp-for="ImageFile" class="form-label">Item Image *</label>
-            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" required />
-            <span asp-validation-for="ImageFile" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn btn-success w-100">Create Item</button>

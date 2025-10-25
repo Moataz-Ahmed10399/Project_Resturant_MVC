@@ -43,15 +43,19 @@ namespace Project_Resturant_MVC.Controllers
                 if (result.Succeeded) 
                 {
                     //assign to role
-                    await userManager.AddToRoleAsync(appuser, "Admin");
+                    //await userManager.AddToRoleAsync(appuser, "Admin");
+                    await userManager.AddToRoleAsync(appuser, "Client");
+
+                    await signInManager.SignInAsync(appuser, false);
+                    return RedirectToAction("Index", "Home");
 
                     //cokkiee
 
 
 
                     //SignInManager<ApplicationUser> sign = new SignInManager<ApplicationUser>()
-                    await   signInManager.SignInAsync(appuser , false);
-                    return RedirectToAction("GetAllMenuItem", "MenuItem");
+                    //await   signInManager.SignInAsync(appuser , false);
+                    //return RedirectToAction("GetAllMenuItem", "MenuItem");
                 }
                 foreach (var item in result.Errors)
                 {
@@ -84,9 +88,24 @@ namespace Project_Resturant_MVC.Controllers
                     {
                         List<Claim>claims = new List<Claim>();
                         claims.Add(new Claim("UserAddress", appuser.Address));
-                       await signInManager.SignInWithClaimsAsync(appuser, loginvm.RememberMe,claims);
-                       //await signInManager.SignInAsync(appuser , loginvm.RememberMe);  دي بتجفظ الاسم بس 
-                        return RedirectToAction("GetAllMenuItem", "MenuItem");                   
+                         await signInManager.SignInWithClaimsAsync(appuser, loginvm.RememberMe,claims);
+
+                        //return RedirectToAction("GetAllMenuItem", "MenuItem");
+                        var roles = await userManager.GetRolesAsync(appuser);
+                        var userRole = roles.FirstOrDefault();
+
+                        if (userRole == "Kitchen")
+                        {
+                            return RedirectToAction("KitchenDashboard", "Order");
+                        }
+                        else if (userRole == "Admin")
+                        {
+                            return RedirectToAction("AdminOrdersDashboard", "Order");
+                        }
+                        else 
+                        {
+                            return RedirectToAction("GetAllMenuItem", "MenuItem");
+                        }
                     }
                 }
                 ModelState.AddModelError("", "UserName OR Password is wrong");
@@ -98,7 +117,9 @@ namespace Project_Resturant_MVC.Controllers
          public async Task<IActionResult> SignOut()
         {
            await signInManager.SignOutAsync();
-            return View("Login");
+
+            return RedirectToAction("Index", "Home"); 
+
         }
     }
 }

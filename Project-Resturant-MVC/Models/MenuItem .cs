@@ -21,8 +21,8 @@ namespace Project_Resturant_MVC.Models
 
         [Range(1, 300)]
         public int PreparationTimeMinutes { get; set; }
-        [StringLength(500)]
-        public string? ImageUrl { get; set; }
+        //[StringLength(255)]
+        //public string? ImageUrl { get; set; }
         public bool IsAvailable { get; set; } = true;
 
         public int CategoryId { get; set; }

@@ -109,7 +109,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 1,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -123,7 +123,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 1,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 8,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -137,7 +137,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 1,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 7,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
 
@@ -153,7 +153,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 2,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -167,7 +167,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 2,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -181,7 +181,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 2,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 6,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -195,7 +195,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 2,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 12,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
 
@@ -211,7 +211,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 3,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 20,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -225,7 +225,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 3,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 15,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -239,7 +239,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 3,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
 
@@ -255,7 +255,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 4,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -269,7 +269,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 4,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 },
                 new MenuItem
@@ -283,7 +283,7 @@ namespace Project_Resturant_MVC.Context
                     CategoryId = 4,
                     CreatedAt = DateTime.UtcNow,
                     Quantity = 10,
-                    ImageUrl = null,
+
                     IsDeleted = false
                 }
             );

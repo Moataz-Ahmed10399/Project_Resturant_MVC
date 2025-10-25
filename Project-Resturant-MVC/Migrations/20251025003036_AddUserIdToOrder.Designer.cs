@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project_Resturant_MVC.Context;
 
@@ -11,9 +12,11 @@ using Project_Resturant_MVC.Context;
 namespace Project_Resturant_MVC.Migrations
 {
     [DbContext(typeof(ResturantDbContext))]
-    partial class ResturantDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251025003036_AddUserIdToOrder")]
+    partial class AddUserIdToOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -260,7 +263,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6423),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(520),
                             Description = "Start your meal with our delicious appetizers",
                             IsDeleted = false,
                             Name = "Appetizers"
@@ -268,7 +271,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6426),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(523),
                             Description = "Hearty and satisfying main dishes",
                             IsDeleted = false,
                             Name = "Main Courses"
@@ -276,7 +279,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6428),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(524),
                             Description = "Sweet treats to end your meal",
                             IsDeleted = false,
                             Name = "Desserts"
@@ -284,7 +287,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6430),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(526),
                             Description = "Refreshing drinks",
                             IsDeleted = false,
                             Name = "Beverages"
@@ -343,7 +346,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6752),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(766),
                             Description = "Crispy wings with buffalo sauce",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -356,7 +359,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 2,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6755),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(769),
                             Description = "Fried cheese sticks with marinara",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -369,7 +372,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 3,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6758),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(772),
                             Description = "Fresh romaine with parmesan and croutons",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -382,7 +385,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 4,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6761),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(775),
                             Description = "Classic pizza with tomato, mozzarella, and basil",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -395,7 +398,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 5,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6764),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(777),
                             Description = "Juicy beef patty with cheese and fries",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -408,7 +411,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 6,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6766),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(780),
                             Description = "Creamy pasta with bacon and parmesan",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -421,7 +424,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 7,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6769),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(782),
                             Description = "Marinated chicken breast with vegetables",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -434,7 +437,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 8,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6771),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(785),
                             Description = "Rich chocolate layer cake",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -447,7 +450,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 9,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6774),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(787),
                             Description = "Creamy New York style cheesecake",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -460,7 +463,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 10,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6776),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(789),
                             Description = "Three scoops with toppings",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -473,7 +476,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 11,
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6778),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(792),
                             Description = "Freshly squeezed orange juice",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -486,7 +489,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 12,
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6781),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(794),
                             Description = "Italian style coffee with foam",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -499,7 +502,7 @@ namespace Project_Resturant_MVC.Migrations
                         {
                             Id = 13,
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6783),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(797),
                             Description = "Coca Cola, Sprite, or Fanta",
                             IsAvailable = true,
                             IsDeleted = false,
@@ -581,7 +584,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6838),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(853),
                             CustomerName = "Ahmed Ali",
                             CustomerPhone = "01012345678",
                             DeliveryAddress = "Cairo, Nasr City",
@@ -596,7 +599,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6841),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(856),
                             CustomerName = "Sara Mohamed",
                             CustomerPhone = "01098765432",
                             DeliveryAddress = "Giza, Dokki",
@@ -654,7 +657,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(6884),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(894),
                             IsDeleted = false,
                             MenuItemId = 5,
                             OrderId = 1,
@@ -665,7 +668,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(7004),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(898),
                             IsDeleted = false,
                             MenuItemId = 8,
                             OrderId = 1,
@@ -676,7 +679,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(7007),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(901),
                             IsDeleted = false,
                             MenuItemId = 11,
                             OrderId = 1,
@@ -687,7 +690,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(7010),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(903),
                             IsDeleted = false,
                             MenuItemId = 4,
                             OrderId = 2,
@@ -698,7 +701,7 @@ namespace Project_Resturant_MVC.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 10, 25, 2, 19, 2, 649, DateTimeKind.Utc).AddTicks(7012),
+                            CreatedAt = new DateTime(2025, 10, 25, 0, 30, 31, 958, DateTimeKind.Utc).AddTicks(905),
                             IsDeleted = false,
                             MenuItemId = 13,
                             OrderId = 2,
