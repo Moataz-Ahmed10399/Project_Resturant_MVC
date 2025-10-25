@@ -66,13 +66,13 @@ namespace Project_Resturant_MVC
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseRequestTiming();
+            //app.UseRequestTiming();
 
-            app.UseBusinessHours(opts =>
-            {
-                opts.StartHour = 9;   
-                opts.EndHour = 23;  
-            });
+            //app.UseBusinessHours(opts =>
+            //{
+            //    opts.StartHour = 9;
+            //    opts.EndHour = 23;
+            //});
 
 
 
