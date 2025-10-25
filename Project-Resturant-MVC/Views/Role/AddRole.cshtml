@@ -1,245 +1,158 @@
-﻿
-@model Project_Resturant_MVC.ViewModel.RoleVm
+﻿@model Project_Resturant_MVC.ViewModel.RoleVm
 @{
     ViewData["Title"] = "Add New Role";
 }
 
 <style>
-    body {
+    /* اعزل الستايل جوه .role-page بدل body عشان ميتخانقش مع _Layout */
+    .role-page {
+        min-height: calc(100vh - 200px);
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 40px 20px;
     }
 
-    .role-container {
-        max-width: 600px;
-        width: 100%;
-    }
-
     .role-card {
         background: white;
         border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         overflow: hidden;
-        animation: slideUp 0.6s ease-out;
-    }
-
-    @@keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        width: 100%;
+        max-width: 650px;
     }
 
     .card-header-custom {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 40px;
+        padding: 32px;
         text-align: center;
     }
 
         .card-header-custom .icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-            animation: rotate 3s linear infinite;
+            font-size: 3rem;
+            margin-bottom: 8px;
         }
-
-    @@keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .card-header-custom h1 {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 700;
-    }
-
-    .card-header-custom p {
-        margin: 10px 0 0 0;
-        opacity: 0.9;
-    }
 
     .form-container {
-        padding: 40px;
+        padding: 28px;
     }
 
     .info-box {
         background: #e7f3ff;
         border-left: 4px solid #667eea;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 30px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        color: #333;
+        font-size: .95rem;
     }
-
-        .info-box .icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-
-        .info-box p {
-            margin: 0;
-            color: #333;
-            font-size: 0.95rem;
-        }
 
     .form-label {
         font-weight: 600;
-        color: #333;
-        margin-bottom: 10px;
-        font-size: 1rem;
-        display: block;
+        margin-bottom: 6px;
     }
 
     .form-control {
         border: 2px solid #e0e0e0;
         border-radius: 10px;
-        padding: 15px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        width: 100%;
+        padding: 12px 14px;
     }
 
         .form-control:focus {
             border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            transform: translateY(-2px);
-            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(102,126,234,.25);
         }
 
     .role-suggestions {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3,1fr);
         gap: 10px;
-        margin-top: 15px;
-        margin-bottom: 25px;
+        margin-top: 10px;
+        margin-bottom: 16px;
     }
 
     .role-suggestion {
         background: #f8f9fa;
         border: 2px solid #e0e0e0;
-        padding: 12px;
+        padding: 10px;
         border-radius: 10px;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s ease;
         font-weight: 600;
         color: #666;
+        transition: .2s;
     }
 
         .role-suggestion:hover {
             background: #667eea;
             border-color: #667eea;
-            color: white;
-            transform: translateY(-2px);
+            color: #fff;
         }
 
     .btn-create {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
         color: white;
-        padding: 15px 30px;
-        font-size: 1.1rem;
-        font-weight: 600;
+        padding: 12px 20px;
+        font-weight: 700;
         border-radius: 10px;
         width: 100%;
-        transition: all 0.3s ease;
-        margin-top: 10px;
     }
-
-        .btn-create:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
 
     .btn-back {
         background: #6c757d;
-        border: none;
-        color: white;
-        padding: 12px 25px;
-        font-size: 1rem;
-        font-weight: 600;
+        color: #fff;
+        padding: 10px 16px;
         border-radius: 10px;
         width: 100%;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        text-decoration: none;
-        display: block;
         text-align: center;
+        display: block;
+        text-decoration: none;
+        margin-top: 10px;
     }
 
         .btn-back:hover {
             background: #5a6268;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
-            color: white;
+            color: #fff;
         }
-
-    .text-danger {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 5px;
-        display: block;
-    }
 </style>
 
-<div class="role-container">
+<div class="role-page">
     <div class="role-card">
         <div class="card-header-custom">
             <div class="icon">🎭</div>
-            <h1>Add New Role</h1>
-            <p>Create a new role for the system</p>
+            <h1 class="h4 m-0">Add New Role</h1>
+            <div class="small opacity-75 mt-1">Create a new role for the system</div>
         </div>
 
         <div class="form-container">
+            @if (ViewBag.Success == true)
+            {
+                <div class="alert alert-success">✅ Role created successfully.</div>
+            }
+
             <div class="info-box">
-                <span class="icon">💡</span>
-                <p><strong>Note:</strong> Role names should be descriptive and follow naming conventions (e.g., Admin, Manager, Supervisor)</p>
+                <strong>Note:</strong> Role names should be descriptive (e.g., Admin, Manager, Supervisor).
             </div>
 
             <form asp-action="AddRole" method="post">
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger mb-2"></div>
 
-                <div class="mb-3">
-                    <label asp-for="RoleName" class="form-label">
-                        🎭 Role Name
-                    </label>
-                    <input asp-for="RoleName" class="form-control" placeholder="Enter role name (e.g., Manager, Supervisor)" />
-                    <span asp-validation-for="RoleName" class="text-danger"></span>
-                </div>
+                <label asp-for="RoleName" class="form-label">Role Name</label>
+                <input asp-for="RoleName" class="form-control" placeholder="e.g., Manager, Supervisor" />
+                <span asp-validation-for="RoleName" class="text-danger small"></span>
 
                 <div class="role-suggestions">
-                    <div class="role-suggestion" onclick="document.querySelector('input[name=RoleName]').value='Manager'">
-                        👨‍💼 Manager
-                    </div>
-                    <div class="role-suggestion" onclick="document.querySelector('input[name=RoleName]').value='Supervisor'">
-                        👔 Supervisor
-                    </div>
-                    <div class="role-suggestion" onclick="document.querySelector('input[name=RoleName]').value='Waiter'">
-                        👨‍🍳 Waiter
-                    </div>
+                    <div class="role-suggestion" onclick="document.querySelector('input[name=RoleName]').value='Manager'">Manager</div>
+                    <div class="role-suggestion" onclick="document.querySelector('input[name=RoleName]').value='Supervisor'">Supervisor</div>
+                    <div class="role-suggestion" onclick="document.querySelector('input[name=RoleName]').value='Waiter'">Waiter</div>
                 </div>
 
-                <button type="submit" class="btn-create">
-                    ✅ Create Role
-                </button>
-                <a asp-controller="User" asp-action="GetAllUsers" class="btn-back">
-                    ⬅️ Back to Users
-                </a>
-
+                <button type="submit" class="btn-create">✅ Create Role</button>
+                <a asp-controller="User" asp-action="GetAllUsers" class="btn-back">⬅️ Back to Users</a>
             </form>
         </div>
     </div>
@@ -249,11 +162,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        // Auto-capitalize first letter
-        document.querySelector('input[name=RoleName]').addEventListener('input', function(e) {
-            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
-        });
-    </script>
 }

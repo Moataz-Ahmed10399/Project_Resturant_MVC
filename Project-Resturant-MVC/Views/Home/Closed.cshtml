@@ -1,0 +1,5 @@
+﻿@model (int StartHour, int EndHour, string? ReturnUrl)
+@{
+    Layout = "_Layout";
+}
+@await Html.PartialAsync("_ClosedDuringBusiness", Model)

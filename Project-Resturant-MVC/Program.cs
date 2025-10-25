@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Http.Features;
+﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Resturant_MVC.Context;
+using Project_Resturant_MVC.Middlewares;
 using Project_Resturant_MVC.Models;
+using Project_Resturant_MVC.Services;
 
 namespace Project_Resturant_MVC
 {
@@ -32,6 +34,8 @@ namespace Project_Resturant_MVC
             builder.Services.AddControllersWithViews();
 
 
+            builder.Services.AddScoped<InventoryService>();
+
             //builder.Services.Configure<FormOptions>(options =>
             //{
             //    options.MultipartBodyLengthLimit = 10485760; // 10 MB
@@ -58,8 +62,19 @@ namespace Project_Resturant_MVC
             app.UseStaticFiles();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseRequestTiming();
+
+            app.UseBusinessHours(opts =>
+            {
+                opts.StartHour = 9;   
+                opts.EndHour = 23;  
+            });
+
+
 
             app.MapControllerRoute(
                 name: "default",

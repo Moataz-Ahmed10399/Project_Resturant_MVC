@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -59,38 +60,93 @@ namespace Project_Resturant_MVC.Controllers
         }
 
         [HttpPost("changerole")]
+        [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> ChangeRole(string userId, string newRole)
         {
+            //var user = await _userManager.FindByIdAsync(userId);
+            //if (user == null)
+            //    return NotFound();
+
+            //var currentRoles = await _userManager.GetRolesAsync(user);
+            //await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            //await _userManager.AddToRoleAsync(user, newRole);
+            //await _userManager.UpdateAsync(user);
+
+            //TempData["SuccessMessage"] = $"User '{user.UserName}' role changed to '{newRole}'";
+            //return RedirectToAction("GetAllUsers");
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(newRole))
+            {
+                TempData["ErrorMessage"] = "Please choose a valid role.";
+                return RedirectToAction("GetAllUsers");
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound();
+            if (user == null) return NotFound();
+
+            if (!await _roleManager.RoleExistsAsync(newRole))
+            {
+                TempData["ErrorMessage"] = $"Role '{newRole}' does not exist.";
+                return RedirectToAction("GetAllUsers");
+            }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
             await _userManager.AddToRoleAsync(user, newRole);
-            await _userManager.UpdateAsync(user);
 
-            TempData["SuccessMessage"] = $"User '{user.UserName}' role changed to '{newRole}'";
+            var currentUserId = _userManager.GetUserId(User);
+            if (user.Id == currentUserId && !string.Equals(newRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["SuccessMessage"] = $"Your role is now '{newRole}'. You were signed out.";
+                await HttpContext.SignOutAsync(); 
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData["SuccessMessage"] = $"User '{user.UserName}' role changed to '{newRole}'.";
             return RedirectToAction("GetAllUsers");
         }
 
 
-        [HttpPost("DeleteUser/{userId}")]
+        [HttpPost("deleteuser/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound();
+            //var user = await _userManager.FindByIdAsync(userId);
+            //if (user == null)
+            //    return NotFound();
 
-            if (user.UserName == "admin")
+            //if (user.UserName == "admin")
+            //{
+            //    TempData["ErrorMessage"] = "Cannot delete the main admin account.";
+            //    return RedirectToAction("GetAllUsers");
+            //}
+
+            //await _userManager.DeleteAsync(user);
+            //TempData["SuccessMessage"] = $"User '{user.UserName}' deleted successfully.";
+            //return RedirectToAction("GetAllUsers");
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            var currentUserId = _userManager.GetUserId(User);
+            if (user.Id == currentUserId)
+            {
+                TempData["ErrorMessage"] = "You cannot delete your own account while logged in.";
+                return RedirectToAction("GetAllUsers");
+            }
+
+            if (user.UserName?.Equals("admin", StringComparison.OrdinalIgnoreCase) == true)
             {
                 TempData["ErrorMessage"] = "Cannot delete the main admin account.";
                 return RedirectToAction("GetAllUsers");
             }
 
-            await _userManager.DeleteAsync(user);
-            TempData["SuccessMessage"] = $"User '{user.UserName}' deleted successfully.";
+            var result = await _userManager.DeleteAsync(user);
+            TempData[(result.Succeeded ? "SuccessMessage" : "ErrorMessage")] =
+                result.Succeeded ? $"User '{user.UserName}' deleted successfully."
+                                 : string.Join(" | ", result.Errors.Select(e => e.Description));
+
             return RedirectToAction("GetAllUsers");
         }
     }

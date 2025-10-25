@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project_Resturant_MVC.Context;
 using Project_Resturant_MVC.Models;
+using Project_Resturant_MVC.Services;
 using Project_Resturant_MVC.ViewModel;
 using System.Security.Claims;
 
@@ -15,10 +16,12 @@ namespace Project_Resturant_MVC.Controllers
     public class OrderController : Controller
     {
         private readonly ResturantDbContext _Context;
+        private readonly InventoryService _inventoryService;
 
-        public OrderController(ResturantDbContext context)
+        public OrderController(ResturantDbContext context, InventoryService inventoryService)
         {
             _Context = context;
+            _inventoryService = inventoryService;
         }
         [HttpGet("")]
 
@@ -79,9 +82,32 @@ namespace Project_Resturant_MVC.Controllers
                 return View(vmOrder);
             }
 
+            //foreach (var item in vmOrder.Items)
+            //{
+            //    var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
+
+            //    if (menuItem == null)
+            //    {
+            //        ModelState.AddModelError("", $"Menu item with ID {item.MenuItemId} not found.");
+            //        return await ReloadCreateView(vmOrder);
+            //    }
+
+            //    if (!menuItem.IsAvailable)
+            //    {
+            //        ModelState.AddModelError("", $"{menuItem.Name} is currently unavailable.");
+            //        return await ReloadCreateView(vmOrder);
+            //    }
+
+            //    if (menuItem.Quantity < item.Quantity)
+            //    {
+            //        ModelState.AddModelError("", $"Only {menuItem.Quantity} of {menuItem.Name} available.");
+            //        return await ReloadCreateView(vmOrder);
+            //    }
+            //}
             foreach (var item in vmOrder.Items)
             {
-                var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
+                var menuItem = await _Context.MenuItems
+                    .FirstOrDefaultAsync(m => m.Id == item.MenuItemId && !m.IsDeleted);
 
                 if (menuItem == null)
                 {
@@ -97,10 +123,27 @@ namespace Project_Resturant_MVC.Controllers
 
                 if (menuItem.Quantity < item.Quantity)
                 {
-                    ModelState.AddModelError("", $"Only {menuItem.Quantity} of {menuItem.Name} available.");
+                    ModelState.AddModelError("", $"Only {menuItem.Quantity} of {menuItem.Name} available in stock.");
+                    return await ReloadCreateView(vmOrder);
+                }
+
+                var orderedToday = await _inventoryService.GetOrderedQtyTodayAsync(item.MenuItemId);
+                var dailyLimit = _inventoryService.GetDailyLimit();
+                var remaining = dailyLimit - orderedToday;
+
+                if (remaining <= 0)
+                {
+                    ModelState.AddModelError("", $"'{menuItem.Name}' reached today's limit ({dailyLimit}). Please choose another item.");
+                    return await ReloadCreateView(vmOrder);
+                }
+
+                if (item.Quantity > remaining)
+                {
+                    ModelState.AddModelError("", $"Only {remaining} of '{menuItem.Name}' available today (daily limit {dailyLimit}).");
                     return await ReloadCreateView(vmOrder);
                 }
             }
+
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -152,6 +195,8 @@ namespace Project_Resturant_MVC.Controllers
 
             await _Context.Orders.AddAsync(order);
             await _Context.SaveChangesAsync();
+
+            await _inventoryService.TrackOrderAsync(order);
 
             TempData["SuccessMessage"] = $"Order #{order.Id} created successfully! Estimated delivery: {order.EstimatedDeliveryMinutes} minutes.";
             return RedirectToAction("GetAllOrders");
@@ -296,7 +341,34 @@ namespace Project_Resturant_MVC.Controllers
                     ViewBag.CurrentStatus = order.Status;
                     return View(vmOrder);
                 }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////
+                var orderedToday = await _inventoryService.GetOrderedQtyTodayAsync(item.MenuItemId);
+                var dailyLimit = _inventoryService.GetDailyLimit();
+                var remaining = dailyLimit - orderedToday;
 
+                if (remaining <= 0)
+                {
+                    ModelState.AddModelError("", $"'{menuItem.Name}' reached today's limit ({dailyLimit}).");
+                    var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable && !m.IsDeleted).ToListAsync();
+                    vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
+                    vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
+                    ViewBag.OrderId = id;
+                    ViewBag.CurrentStatus = order.Status;
+                    return View(vmOrder);
+                }
+
+                if (item.Quantity > remaining)
+                {
+                    ModelState.AddModelError("", $"Only {remaining} of '{menuItem.Name}' available today (daily limit {dailyLimit}).");
+                    var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable && !m.IsDeleted).ToListAsync();
+                    vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
+                    vmOrder.OrderTypes = new SelectList(Enum.GetValues(typeof(OrderType)));
+                    ViewBag.OrderId = id;
+                    ViewBag.CurrentStatus = order.Status;
+                    return View(vmOrder);
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////
                 order.OrderItems.Add(new OrderItem
                 {
                     MenuItemId = item.MenuItemId,
@@ -325,6 +397,7 @@ namespace Project_Resturant_MVC.Controllers
             order.EstimatedDeliveryMinutes = maxPrepTime + 30;
 
             await _Context.SaveChangesAsync();
+            await _inventoryService.TrackOrderAsync(order);
 
             TempData["SuccessMessage"] = "Order updated successfully!";
             return RedirectToAction("GetAllOrders");
