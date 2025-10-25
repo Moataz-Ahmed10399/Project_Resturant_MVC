@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Sales Analytics Dashboard";
+    var chartData = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Last7DaysSales);
+    var topItems = ViewBag.TopItems as IEnumerable<dynamic>;
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📊 Sales Analytics</h1>
+
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Sales</h5>
+                    <h3 class="text-success">@ViewBag.TotalSales.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Orders</h5>
+                    <h3 class="text-primary">@ViewBag.TotalOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Average Order</h5>
+                    <h3 class="text-info">@ViewBag.AvgOrder.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card shadow">
+        <div class="card-header bg-gradient bg-secondary text-white">
+            <h5>🍕 Top 5 Selling Items</h5>
+        </div>
+        <div class="card-body">
+            @if (topItems != null && topItems.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in topItems)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Quantity</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No sales data available yet.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const salesData = @Html.Raw(chartData);
+
+        const labels = salesData.map(x => new Date(x.Date).toLocaleDateString());
+        const totals = salesData.map(x => x.Total);
+
+        const ctx = document.getElementById('salesChart');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales ($)',
+                    data: totals,
+                    fill: true,
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.3)',
+                    tension: 0.3,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
