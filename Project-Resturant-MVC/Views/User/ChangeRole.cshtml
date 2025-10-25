@@ -34,7 +34,7 @@
                 </div>
 
             </form> *@
-            <form asp-controller="User" asp-action="ChangeRole" method="post">
+            <form asp-controller="User" asp-action="ChangeRole" asp-route-userId="@ViewBag.UserId" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="userId" value="@ViewBag.UserId" />
 

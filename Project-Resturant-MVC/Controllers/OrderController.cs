@@ -17,11 +17,14 @@ namespace Project_Resturant_MVC.Controllers
     {
         private readonly ResturantDbContext _Context;
         private readonly InventoryService _inventoryService;
+        private readonly IPricingService _pricing;
 
-        public OrderController(ResturantDbContext context, InventoryService inventoryService)
+        public OrderController(ResturantDbContext context, InventoryService inventoryService, IPricingService pricing)
         {
             _Context = context;
             _inventoryService = inventoryService;
+            _pricing = pricing;
+
         }
         [HttpGet("")]
 
@@ -82,28 +85,7 @@ namespace Project_Resturant_MVC.Controllers
                 return View(vmOrder);
             }
 
-            //foreach (var item in vmOrder.Items)
-            //{
-            //    var menuItem = await _Context.MenuItems.FindAsync(item.MenuItemId);
-
-            //    if (menuItem == null)
-            //    {
-            //        ModelState.AddModelError("", $"Menu item with ID {item.MenuItemId} not found.");
-            //        return await ReloadCreateView(vmOrder);
-            //    }
-
-            //    if (!menuItem.IsAvailable)
-            //    {
-            //        ModelState.AddModelError("", $"{menuItem.Name} is currently unavailable.");
-            //        return await ReloadCreateView(vmOrder);
-            //    }
-
-            //    if (menuItem.Quantity < item.Quantity)
-            //    {
-            //        ModelState.AddModelError("", $"Only {menuItem.Quantity} of {menuItem.Name} available.");
-            //        return await ReloadCreateView(vmOrder);
-            //    }
-            //}
+           
             foreach (var item in vmOrder.Items)
             {
                 var menuItem = await _Context.MenuItems
@@ -188,10 +170,17 @@ namespace Project_Resturant_MVC.Controllers
             }
 
             order.Subtotal = subtotal;
-            order.Tax = subtotal * 0.085m;
-            order.Discount = 0;
-            order.Total = order.Subtotal + order.Tax - order.Discount;
+
+            var pricing = _pricing.Calculate(order.Subtotal, DateTime.Now);
+            order.Discount = pricing.TotalDiscount;
+
+            var taxable = Math.Max(0, order.Subtotal - order.Discount);
+            order.Tax = Math.Round(taxable * 0.085m, 2);
+
+            order.Total = taxable + order.Tax;
+
             order.EstimatedDeliveryMinutes = maxPrepTime + 30;
+
 
             await _Context.Orders.AddAsync(order);
             await _Context.SaveChangesAsync();
@@ -291,14 +280,7 @@ namespace Project_Resturant_MVC.Controllers
 
                 return View(vmOrder);
             }
-            //using var tx = await _Context.Database.BeginTransactionAsync();
-
-            //foreach (var oldItem in order.OrderItems)
-            //{
-            //    var menuItem = await _Context.MenuItems.FindAsync(oldItem.MenuItemId);
-            //    menuItem.Quantity += oldItem.Quantity;
-            //    menuItem.IsAvailable = true;
-            //}
+       
             foreach (var oldItem in order.OrderItems)
             {
                 var oldMenu = await _Context.MenuItems.FindAsync(oldItem.MenuItemId);
@@ -325,14 +307,9 @@ namespace Project_Resturant_MVC.Controllers
                 var menuItem = await _Context.MenuItems
                     .FirstOrDefaultAsync(m => m.Id == item.MenuItemId && !m.IsDeleted);
 
-                //if (!menuItem.IsAvailable || menuItem.Quantity < item.Quantity)
                 if (menuItem == null || !menuItem.IsAvailable || menuItem.Quantity < item.Quantity)
                 {
-                    //ModelState.AddModelError("", $"{menuItem?.Name ?? "Item"} is unavailable or insufficient quantity.");
-                    //ViewBag.OrderId = id;
-                    ////await tx.RollbackAsync();
-
-                    //return await ReloadUpdateView(vmOrder, id);
+                   
                     ModelState.AddModelError("", $"{menuItem?.Name ?? "Item"} is unavailable or insufficient quantity.");
                     var menuItems = await _Context.MenuItems.Where(m => m.IsAvailable && !m.IsDeleted).ToListAsync();
                     vmOrder.MenuItemsSelect = new SelectList(menuItems, "Id", "Name");
@@ -390,11 +367,20 @@ namespace Project_Resturant_MVC.Controllers
 
             }
 
+         
             order.Subtotal = subtotal;
-            order.Tax = subtotal * 0.085m;
-            order.Discount = order.Discount;
-            order.Total = order.Subtotal + order.Tax - order.Discount;
+
+            var pricing = _pricing.Calculate(order.Subtotal, DateTime.Now);
+            order.Discount = pricing.TotalDiscount;
+
+            var taxable = Math.Max(0, order.Subtotal - order.Discount);
+            order.Tax = Math.Round(taxable * 0.085m, 2);
+
+            order.Total = taxable + order.Tax;
             order.EstimatedDeliveryMinutes = maxPrepTime + 30;
+
+
+
 
             await _Context.SaveChangesAsync();
             await _inventoryService.TrackOrderAsync(order);

@@ -22,7 +22,8 @@ namespace Project_Resturant_MVC.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllCategory()
         {
-            var cat = await _Context.Categories.Where(c => !c.IsDeleted)
+            var cat = await _Context.Categories.Where(c => c.MenuItems.Any(m => m.IsAvailable && !m.IsDeleted))
+
                     .Include(c => c.MenuItems).ToListAsync();
 
             return View(cat);

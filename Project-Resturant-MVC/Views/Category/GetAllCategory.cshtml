@@ -1,82 +1,4 @@
-﻿@* @model List<Category>
-@{
-    ViewData["Title"] = "All Categories";
-}
-<div class="w-100 m-0 p-0">
-    <h1 class="mb-4 text-center text-primary">📂 Categories</h1>
-
-    <div class="d-flex justify-content-between mb-3 px-5">
-        @if (User.IsInRole("Admin"))
-        {
-            <a href="/Category/Create" class="btn btn-success">+ Add New Category</a>
-        }
-        else
-        {
-            <span></span>
-        }
-        <a href="/" class="btn btn-secondary">Back</a>
-    </div>
-
-    <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm w-100">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Description</th>
-                @if (User.IsInRole("Admin"))
-                {
-                    <th>Created</th>
-                    <th>Actions</th>
-                }
-                else
-                {
-                    <th>Details</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var cat in Model)
-                {
-                    <tr>
-                        <td>@cat.Id</td>
-                        <td>@cat.Name</td>
-                        <td>@cat.Description</td>
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <td>@cat.CreatedAt.ToShortDateString()</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="/Category/Update/@cat.Id" class="btn btn-primary btn-sm">Edit</a>
-                                    <a href="/Category/Details/@cat.Id" class="btn btn-info btn-sm text-white">Details</a>
-                                    <a href="/Category/Delete/@cat.Id" class="btn btn-danger btn-sm">Delete</a>
-                                </div>
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                <a href="/Category/Details/@cat.Id" class="btn btn-info btn-sm">
-                                    👁️ View Items
-                                </a>
-                            </td>
-                        }
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="@(User.IsInRole("Admin") ? "5" : "4")" class="text-center text-muted">
-                        No categories found.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div> *@
+﻿
 @model List<Category>
 @{
     ViewData["Title"] = "Categories";
@@ -328,6 +250,16 @@
         <div class="categories-grid">
             @foreach (var cat in Model)
             {
+                // احسب الايتيمز المتاحة داخل الكاتيجوري
+                var availableItems = (cat.MenuItems ?? new List<MenuItem>())
+                .Where(m => m.IsAvailable && !m.IsDeleted)
+                .ToList();
+
+                // للعميل: اخفي الكاتيجوري لو مفيش ولا صنف متاح
+                if (!User.IsInRole("Admin") && !availableItems.Any())
+                {
+                    continue;
+                }
                 <div class="category-card">
                     <div class="card-header-custom">
                         <div class="card-icon">🍽️</div>
@@ -341,7 +273,9 @@
                         <div class="card-meta">
                             <div class="meta-item">
                                 <div class="meta-label">Items</div>
-                                <div class="meta-value">@(cat.MenuItems?.Count ?? 0)</div>
+                                @* <div class="meta-value">@(cat.MenuItems?.Count ?? 0)</div> *@
+                                <div class="meta-value">@availableItems.Count</div>
+
                             </div>
                             <div class="meta-item">
                                 <div class="meta-label">Created</div>

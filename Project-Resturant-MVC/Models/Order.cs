@@ -43,5 +43,8 @@ namespace Project_Resturant_MVC.Models
 
         [ForeignKey("UserId")]
         public ApplicationUser? User { get; set; }
+
+        public DateTime? PreparingAt { get; set; }
+
     }
 }

@@ -1,0 +1,54 @@
+﻿@{
+    var success = TempData["SuccessMessage"] as string;
+    var error = TempData["ErrorMessage"] as string;
+    var info = TempData["InfoMessage"] as string;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        @if (!string.IsNullOrEmpty(success))
+        {
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ✅ @success
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ❌ @error
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(info))
+        {
+            <div class="toast align-items-center text-bg-info border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ℹ️ @info
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // لو في Toasts ظاهرة، خلّيها تختفي تلقائيًا بعد 4 ثواني
+    document.querySelectorAll('.toast.show').forEach(t => {
+        const toast = new bootstrap.Toast(t, { delay: 4000 });
+        toast.show();
+    });
+</script>

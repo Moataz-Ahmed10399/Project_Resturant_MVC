@@ -17,6 +17,7 @@ namespace Project_Resturant_MVC
             builder.Services.AddDbContext<ResturantDbContext>(options =>
                  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddHostedService<Project_Resturant_MVC.Services.OrderStatusBackgroundService>();
 
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
@@ -33,6 +34,7 @@ namespace Project_Resturant_MVC
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddScoped<IPricingService, PricingService>();
 
             builder.Services.AddScoped<InventoryService>();
 
