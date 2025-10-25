@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,7 +21,6 @@
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">🏠 Home</a>
                         </li>
 
-                        @* ========== CLIENT NAV ========== *@
                         @if (User.IsInRole("Client"))
                         {
                             <li class="nav-item">
@@ -46,7 +45,6 @@
                             </li>
                         }
 
-                        @* ========== KITCHEN NAV ========== *@
                         @if (User.IsInRole("Kitchen"))
                         {
                             <li class="nav-item">
@@ -56,7 +54,6 @@
                             </li>
                         }
 
-                        @* ========== ADMIN NAV ========== *@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
@@ -81,7 +78,6 @@
                             </li>
                         }
 
-                        @* ========== AUTH SECTION ========== *@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item ms-auto">
@@ -124,6 +120,451 @@
             &copy; 2025 - Restaurant MVC
         </div>
     </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html> *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Restaurant MVC</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Enhanced Navbar */
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-brand:hover {
+                transform: scale(1.05);
+            }
+
+            .navbar-brand .logo-icon {
+                font-size: 2rem;
+                animation: rotate 10s linear infinite;
+            }
+
+        @@keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 600;
+            padding: 10px 20px !important;
+            margin: 0 5px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .nav-link:hover {
+                background: rgba(255,255,255,0.2);
+                color: white !important;
+                transform: translateY(-2px);
+            }
+
+            .nav-link.active {
+                background: rgba(255,255,255,0.3);
+                color: white !important;
+            }
+
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .dropdown-item {
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .dropdown-item:hover {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                transform: translateX(5px);
+            }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-indicator {
+            background: rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        .footer-custom {
+            background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+            color: white;
+            padding: 40px 0 20px 0;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-section ul li {
+                margin-bottom: 10px;
+            }
+
+                .footer-section ul li a {
+                    color: rgba(255,255,255,0.7);
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                    .footer-section ul li a:hover {
+                        color: #667eea;
+                        transform: translateX(5px);
+                    }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+            .social-links a {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+                .social-links a:hover {
+                    background: #667eea;
+                    transform: translateY(-3px);
+                }
+
+        /* Mobile Responsive */
+        @@media (max-width: 991px) {
+            .navbar-collapse
+
+        {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="logo-icon">🍽️</span>
+                    Restaurant MVC
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        style="background: rgba(255,255,255,0.2); border: none;">
+                    <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                🏠 Home
+                            </a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @* Common Links for All Users *@
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Category" asp-action="GetAllCategory">
+                                    📂 Categories
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="MenuItem" asp-action="GetAllMenuItem">
+                                    🍕 Menu
+                                </a>
+                            </li>
+
+                            @* Admin Links *@
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                        👨‍💼 Admin Panel
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Order" asp-action="AdminOrdersDashboard">
+                                                📊 Orders Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="User" asp-action="GetAllUsers">
+                                                👥 User Management
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Category" asp-action="Create">
+                                                ➕ Add Category
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="MenuItem" asp-action="Create">
+                                                ➕ Add Menu Item
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @* Kitchen Links *@
+                            @if (User.IsInRole("Kitchen"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Order" asp-action="KitchenDashboard">
+                                        👨‍🍳 Kitchen Dashboard
+                                    </a>
+                                </li>
+                            }
+
+                            @* Client Links *@
+                            @if (User.IsInRole("Client"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                        🛒 Orders
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Order" asp-action="Create">
+                                                ➕ Create Order
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Order" asp-action="GetAllOrders">
+                                                📋 My Orders
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @* User Profile *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <span class="user-badge">
+                                        👤 @User.Identity.Name
+                                        <span class="role-indicator">
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <text>Admin</text>
+                                            }
+                                            @if (User.IsInRole("Kitchen"))
+                                            {
+                                                <text>Kitchen</text>
+                                            }
+                                            @if (User.IsInRole("Client"))
+                                            {
+                                                <text>Client</text>
+                                            }
+                                        </span>
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                  
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="SignOut">
+                                            🚪 Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                    🔐 Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">
+                                    📝 Register
+                                </a>
+                            </li>
+                        }
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                🔒 Privacy
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid p-0">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🍽️ Restaurant MVC</h3>
+                    <p style="color: rgba(255,255,255,0.7);">
+                        Your complete restaurant management solution. Order, manage, and deliver with ease.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" title="Facebook">📘</a>
+                        <a href="#" title="Twitter">🐦</a>
+                        <a href="#" title="Instagram">📷</a>
+                        <a href="#" title="LinkedIn">💼</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">🏠 Home</a></li>
+                        <li><a href="/Category/GetAllCategory">📂 Categories</a></li>
+                        <li><a href="/MenuItem/GetAllMenuItem">🍕 Menu</a></li>
+                        <li><a href="/Home/Privacy">🔒 Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="tel:+1234567890">📞 +1 (234) 567-890</a></li>
+                        <li><a href="mailto:info@restaurant.com">📧 info@restaurant.com</a></li>
+                        <li><a href="#">📍 123 Restaurant St, Food City</a></li>
+                        <li><a href="#">🕐 Open: 9 AM - 11 PM</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Restaurant MVC. All rights reserved. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

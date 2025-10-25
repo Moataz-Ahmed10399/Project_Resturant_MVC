@@ -1,4 +1,4 @@
-﻿@model Order
+﻿@* @model Order
 @{
     ViewData["Title"] = "Update Order Status";
 }
@@ -99,4 +99,329 @@
     <div class="mt-3">
         <a asp-action="KitchenDashboard" class="btn btn-secondary">⬅️ Back to Kitchen</a>
     </div>
+</div> *@
+
+@model Order
+@{
+    ViewData["Title"] = "Update Order Status";
+}
+
+<style>
+    .status-page {
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-weight: bold;
+        }
+
+    .order-info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+
+    .info-section {
+        margin-bottom: 2rem;
+    }
+
+        .info-section h5 {
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .info-value {
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .order-items-list {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+        .order-items-list li {
+            padding: 0.5rem 0;
+            color: #495057;
+            font-size: 1rem;
+        }
+
+    .status-badge {
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .actions-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+        .actions-card h5 {
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+    .status-action-btn {
+        width: 100%;
+        padding: 1.2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+        cursor: pointer;
+    }
+
+        .status-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+    .btn-start-preparing {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .btn-mark-ready {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .btn-mark-delivered {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+    }
+
+    .btn-cancel-order {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+        .back-link:hover {
+            background: #5a6268;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin-top: 2rem;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.7rem;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+        }
+
+        .timeline-item.active::before {
+            background: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+</style>
+
+<div class="status-page">
+    <div class="page-header">
+        <h2>🔄 Update Order Status</h2>
+        <p class="mb-0 mt-2">Order #@Model.Id</p>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+            <strong>❌ Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="order-info-card">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-section">
+                    <h5>👤 Customer Information</h5>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">@Model.CustomerName</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phone:</span>
+                        <span class="info-value">@Model.CustomerPhone</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Type:</span>
+                        <span class="info-value">
+                            <span class="badge bg-primary">@Model.Type</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-section">
+                    <h5>📊 Order Details</h5>
+                    <div class="info-row">
+                        <span class="info-label">Total:</span>
+                        <span class="info-value text-success fw-bold">@Model.Total.ToString("C")</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Created:</span>
+                        <span class="info-value">@Model.CreatedAt.ToString("g")</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="status-badge
+                            @(Model.Status == OrderStatus.Delivered ? "bg-success" :
+                                                            Model.Status == OrderStatus.Ready ? "bg-info" :
+                                                            Model.Status == OrderStatus.Preparing ? "bg-warning text-dark" :
+                                                            "bg-secondary")">
+                            @Model.Status
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h5>📦 Order Items</h5>
+            <ul class="order-items-list">
+                @foreach (var item in Model.OrderItems)
+                {
+                    <li>
+                        <strong>@item.MenuItem.Name</strong> × @item.Quantity
+                        <span class="text-muted">(⏱️ @item.MenuItem.PreparationTimeMinutes min)</span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item @(Model.Status >= OrderStatus.Pending ? "active" : "")">
+                <strong>Pending</strong> - Order received
+            </div>
+            <div class="timeline-item @(Model.Status >= OrderStatus.Preparing ? "active" : "")">
+                <strong>Preparing</strong> - Kitchen is working on it
+            </div>
+            <div class="timeline-item @(Model.Status >= OrderStatus.Ready ? "active" : "")">
+                <strong>Ready</strong> - Order is complete
+            </div>
+            <div class="timeline-item @(Model.Status >= OrderStatus.Delivered ? "active" : "")">
+                <strong>Delivered</strong> - Order completed
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-card">
+        <h5>⚡ Update Status Actions</h5>
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            @if (Model.Status == OrderStatus.Pending)
+            {
+                <button type="submit" name="newStatus" value="@((int)OrderStatus.Preparing)"
+                        class="status-action-btn btn-start-preparing">
+                    ▶️ Start Preparing
+                </button>
+            }
+
+            @if (Model.Status == OrderStatus.Preparing)
+            {
+                <button type="submit" name="newStatus" value="@((int)OrderStatus.Ready)"
+                        class="status-action-btn btn-mark-ready">
+                    ✅ Mark as Ready
+                </button>
+            }
+
+            @if (Model.Status == OrderStatus.Ready)
+            {
+                <button type="submit" name="newStatus" value="@((int)OrderStatus.Delivered)"
+                        class="status-action-btn btn-mark-delivered">
+                    🚚 Mark as Delivered
+                </button>
+            }
+
+            @if (Model.Status == OrderStatus.Pending || Model.Status == OrderStatus.Preparing)
+            {
+                <button type="submit" name="newStatus" value="@((int)OrderStatus.Cancelled)"
+                        class="status-action-btn btn-cancel-order"
+                        onclick="return confirm('Are you sure you want to cancel this order?')">
+                    ❌ Cancel Order
+                </button>
+            }
+        </form>
+    </div>
+
+    <a asp-action="KitchenDashboard" class="back-link">
+        ⬅️ Back to Kitchen Dashboard
+    </a>
 </div>

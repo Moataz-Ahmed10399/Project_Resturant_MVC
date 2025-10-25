@@ -1,4 +1,4 @@
-﻿@model List<MenuItem>
+﻿    @* @model List<MenuItem>
 @{
     ViewData["Title"] = "All Menu Items";
 }
@@ -81,4 +81,341 @@
             }
         </tbody>
     </table>
+</div> *@
+@model List<MenuItem>
+@{
+    ViewData["Title"] = "Menu Items";
+}
+
+<style>
+    .menu-page {
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: 0 15px 40px rgba(240, 147, 251, 0.3);
+    }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn-action {
+        padding: 0.8rem 1.8rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 233, 123, 0.3);
+            color: white;
+        }
+
+    .btn-back {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .menu-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #f5576c;
+        }
+
+    .card-image {
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+        color: white;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+    }
+
+    .card-description {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        height: 3rem;
+        overflow: hidden;
+    }
+
+    .card-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .price-tag {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #43e97b;
+        margin-bottom: 1rem;
+    }
+
+    .badge-custom {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-available {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-unavailable {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-quantity {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 1rem;
+        border-top: 2px solid #f8f9fa;
+    }
+
+    .btn-card {
+        flex: 1;
+        padding: 0.7rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        border: none;
+    }
+
+    .btn-edit {
+        background: #667eea;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+            color: white;
+        }
+
+    .btn-delete {
+        background: #f5576c;
+        color: white;
+    }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            transform: scale(1.05);
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="menu-page container-fluid">
+    <div class="page-header">
+        <h1>🍕 Our Menu</h1>
+        <p>Discover our delicious selection of freshly prepared dishes</p>
+    </div>
+
+    <div class="action-bar">
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/MenuItem/Create" class="btn-action btn-add">
+                ➕ Add New Item
+            </a>
+        }
+        else
+        {
+            <span></span>
+        }
+        <a href="/" class="btn-action btn-back">
+            ⬅️ Back to Home
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="menu-grid">
+            @foreach (var item in Model.OrderByDescending(m => m.IsAvailable))
+            {
+                <div class="menu-card">
+                    <div class="card-image">
+                        🍽️
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">@item.Name</div>
+                        <div class="card-description">@item.Description</div>
+
+                        <div class="price-tag">@item.Price.ToString("C")</div>
+
+                        <div class="card-info">
+                            <div class="info-item">
+                                <span class="info-label">Stock</span>
+                                <span class="badge-custom badge-quantity">
+                                    @item.Quantity units
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Prep Time</span>
+                                <span class="info-value">⏱️ @item.PreparationTimeMinutes min</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value">@item.Category?.Name</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="badge-custom @(item.IsAvailable ? "badge-available" : "badge-unavailable")">
+                                    @(item.IsAvailable ? "✅ Available" : "❌ Unavailable")
+                                </span>
+                            </div>
+                        </div>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="card-actions">
+                                <a href="/MenuItem/Update/@item.Id" class="btn-card btn-edit">
+                                    ✏️ Edit
+                                </a>
+                                <a href="/MenuItem/DeleteMenuItem/@item.Id" class="btn-card btn-delete"
+                                   onclick="return confirm('Delete this item?')">
+                                    🗑️ Delete
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">🍽️</div>
+            <h3>No Menu Items Found</h3>
+            <p>There are no items in the menu yet.</p>
+            @if (User.IsInRole("Admin"))
+            {
+                <a href="/MenuItem/Create" class="btn-action btn-add">
+                    ➕ Add First Item
+                </a>
+            }
+        </div>
+    }
 </div>

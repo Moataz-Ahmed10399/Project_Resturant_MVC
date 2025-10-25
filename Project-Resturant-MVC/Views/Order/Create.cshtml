@@ -1,4 +1,4 @@
-﻿@using Project_Resturant_MVC.ViewModel
+﻿@* @using Project_Resturant_MVC.ViewModel
 @model VmOrder
 
 @if (TempData["ErrorMessage"] != null)
@@ -137,4 +137,340 @@
             e.target.closest('.order-item-row').remove();
         }
     });
-</script>
+</script> *@
+@using Project_Resturant_MVC.ViewModel
+@model VmOrder
+
+<style>
+    .create-order-page {
+        max-width: 1000px;
+        margin: 2rem auto;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+        .page-header h1 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+    .order-form {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .form-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #f8f9fa;
+    }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+    .section-title {
+        color: #2c3e50;
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.8rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+    .order-item-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+        .order-item-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+    .btn-add-item {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-add-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+    .btn-remove-item {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-remove-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
+        }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        border: none;
+        padding: 1.2rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 2rem;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+        }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .item-number {
+        display: inline-block;
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 35px;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+</style>
+
+<div class="create-order-page">
+    <div class="page-header">
+        <h1>🛒 Create New Order</h1>
+        <p class="mb-0 mt-2">Fill in the details below to place your order</p>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>❌ Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <strong>⚠️ Please fix the following errors:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-action="Create" method="post" class="order-form">
+        <!-- Customer Information -->
+        <div class="form-section">
+            <div class="section-title">
+                👤 Customer Information
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="CustomerName" class="form-label">Full Name</label>
+                    <input asp-for="CustomerName" class="form-control" placeholder="Enter your name" />
+                    <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CustomerPhone" class="form-label">Phone Number</label>
+                    <input asp-for="CustomerPhone" class="form-control" placeholder="e.g., 01234567890" />
+                    <span asp-validation-for="CustomerPhone" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Information -->
+        <div class="form-section">
+            <div class="section-title">
+                📍 Delivery Details
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Type" class="form-label">Order Type</label>
+                    <select asp-for="Type" asp-items="Model.OrderTypes" class="form-select">
+                        <option value="">-- Select Order Type --</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DeliveryAddress" class="form-label">Delivery Address</label>
+                    <input asp-for="DeliveryAddress" class="form-control" placeholder="Enter full address" />
+                    <span asp-validation-for="DeliveryAddress" class="text-danger small"></span>
+                    <small class="text-muted">Required for delivery orders only</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="form-section">
+            <div class="section-title">
+                🍕 Order Items
+            </div>
+            <div id="order-items-container">
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    <div class="order-item-card order-item-row">
+                        <input type="hidden" name="Items.Index" value="@i" />
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="item-number">@(i + 1)</span>
+                            <strong style="color: #2c3e50;">Item @(i + 1)</strong>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <label asp-for="Items[i].MenuItemId" class="form-label">Menu Item</label>
+                                <select asp-for="Items[i].MenuItemId"
+                                        asp-items="Model.MenuItemsSelect"
+                                        class="form-select">
+                                    <option value="">-- Select Item --</option>
+                                </select>
+                                <span asp-validation-for="Items[i].MenuItemId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Items[i].Quantity" class="form-label">Quantity</label>
+                                <input asp-for="Items[i].Quantity"
+                                       class="form-control"
+                                       type="number"
+                                       value="@Model.Items[i].Quantity"
+                                       min="1" />
+                                <span asp-validation-for="Items[i].Quantity" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn-remove-item remove-item-btn w-100">
+                                    🗑️ Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button type="button" class="btn-add-item" id="add-item-btn">
+                ➕ Add Another Item
+            </button>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            ✅ Place Order
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        let itemCounter = @Model.Items.Count;
+
+        document.getElementById('add-item-btn').addEventListener('click', function () {
+            const container = document.getElementById('order-items-container');
+            const index = itemCounter++;
+
+            const newRow = document.createElement('div');
+            newRow.classList.add('order-item-card', 'order-item-row');
+
+            newRow.innerHTML = `
+                <input type="hidden" name="Items.Index" value="${index}" />
+                <div class="d-flex align-items-center mb-3">
+                    <span class="item-number">${index + 1}</span>
+                    <strong style="color: #2c3e50;">Item ${index + 1}</strong>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label">Menu Item</label>
+                        <select name="Items[${index}].MenuItemId" class="form-select">
+                            ${document.querySelector('[name="Items[0].MenuItemId"]').innerHTML}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Quantity</label>
+                        <input name="Items[${index}].Quantity" class="form-control" type="number" value="1" min="1" />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn-remove-item remove-item-btn w-100">🗑️ Remove</button>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(newRow);
+            updateItemNumbers();
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-item-btn')) {
+                e.target.closest('.order-item-row').remove();
+                updateItemNumbers();
+            }
+        });
+
+        function updateItemNumbers() {
+            const items = document.querySelectorAll('.order-item-row');
+            items.forEach((item, index) => {
+                const numberBadge = item.querySelector('.item-number');
+                if (numberBadge) {
+                    numberBadge.textContent = index + 1;
+                }
+            });
+        }
+    </script>
+}

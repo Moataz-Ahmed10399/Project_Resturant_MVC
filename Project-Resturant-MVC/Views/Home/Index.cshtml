@@ -1,8 +1,290 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div> *@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 5rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+    }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+    @@keyframes fadeInDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 2px solid transparent;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+    .feature-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        animation: bounce 2s infinite;
+    }
+
+    @@keyframes bounce {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .feature-description {
+        color: #6c757d;
+        line-height: 1.6;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero {
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary-hero {
+        background: white;
+        color: #667eea;
+        border: 2px solid white;
+    }
+
+        .btn-primary-hero:hover {
+            background: transparent;
+            color: white;
+            transform: scale(1.05);
+        }
+
+    .btn-secondary-hero {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+        .btn-secondary-hero:hover {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
+        }
+
+    .stats-section {
+        background: #f8f9fa;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        margin-top: 3rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>🍽️ Welcome to Our Restaurant</h1>
+        <p>Experience the finest culinary delights delivered right to your doorstep</p>
+
+        <div class="cta-buttons">
+            @if (User.Identity.IsAuthenticated)
+            {
+                @if (User.IsInRole("Client"))
+                {
+                    <a href="/MenuItem/GetAllMenuItem" class="btn-hero btn-primary-hero">
+                        🍕 Browse Menu
+                    </a>
+                    <a href="/Order/Create" class="btn-hero btn-secondary-hero">
+                        ➕ Place Order
+                    </a>
+                }
+                else if (User.IsInRole("Kitchen"))
+                {
+                    <a href="/Order/KitchenDashboard" class="btn-hero btn-primary-hero">
+                        🍳 Kitchen Dashboard
+                    </a>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <a href="/Order/AdminOrdersDashboard" class="btn-hero btn-primary-hero">
+                        📊 Admin Dashboard
+                    </a>
+                }
+            }
+            else
+            {
+                <a href="/Account/Login" class="btn-hero btn-primary-hero">
+                    🔑 Login
+                </a>
+                <a href="/Account/Register" class="btn-hero btn-secondary-hero">
+                    📝 Sign Up
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">🍔</div>
+                <div class="feature-title">Delicious Food</div>
+                <div class="feature-description">
+                    Freshly prepared meals using the finest ingredients and authentic recipes
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <div class="feature-title">Fast Delivery</div>
+                <div class="feature-description">
+                    Quick and reliable delivery service to ensure your food arrives hot and fresh
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <div class="feature-title">Quality Service</div>
+                <div class="feature-description">
+                    Exceptional customer service and satisfaction guaranteed with every order
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="stats-section">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Happy Customers</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Menu Items</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">Orders Delivered</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">4.9★</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

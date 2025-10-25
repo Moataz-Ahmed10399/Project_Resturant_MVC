@@ -1,4 +1,4 @@
-﻿@model List<Category>
+﻿@* @model List<Category>
 @{
     ViewData["Title"] = "All Categories";
 }
@@ -76,4 +76,319 @@
             }
         </tbody>
     </table>
+</div> *@
+@model List<Category>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<style>
+    .categories-page {
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+    }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn-action {
+        padding: 0.8rem 1.8rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+            color: white;
+        }
+
+    .btn-back {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #4facfe;
+        }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .card-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .card-body-custom {
+        padding: 1.5rem;
+    }
+
+    .card-description {
+        color: #6c757d;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        min-height: 3rem;
+    }
+
+    .card-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-top: 2px solid #f8f9fa;
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        text-align: center;
+    }
+
+    .meta-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .meta-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-top: 0.3rem;
+    }
+
+    .card-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .btn-card {
+        padding: 0.7rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        border: none;
+    }
+
+    .btn-view {
+        background: #4facfe;
+        color: white;
+    }
+
+        .btn-view:hover {
+            background: #3a8fd9;
+            transform: scale(1.05);
+            color: white;
+        }
+
+    .btn-edit {
+        background: #667eea;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+            color: white;
+        }
+
+    .btn-delete {
+        background: #f5576c;
+        color: white;
+    }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            transform: scale(1.05);
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="categories-page container-fluid">
+    <div class="page-header">
+        <h1>📂 Food Categories</h1>
+        <p>Browse our carefully curated food categories</p>
+    </div>
+
+    <div class="action-bar">
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Category/Create" class="btn-action btn-add">
+                ➕ Add New Category
+            </a>
+        }
+        else
+        {
+            <span></span>
+        }
+        <a href="/" class="btn-action btn-back">
+            ⬅️ Back to Home
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="categories-grid">
+            @foreach (var cat in Model)
+            {
+                <div class="category-card">
+                    <div class="card-header-custom">
+                        <div class="card-icon">🍽️</div>
+                        <div class="card-title">@cat.Name</div>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="card-description">
+                            @cat.Description
+                        </div>
+
+                        <div class="card-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Items</div>
+                                <div class="meta-value">@(cat.MenuItems?.Count ?? 0)</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Created</div>
+                                <div class="meta-value">@cat.CreatedAt.ToString("MMM dd")</div>
+                            </div>
+                        </div>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="card-actions">
+                                <a href="/Category/Details/@cat.Id" class="btn-card btn-view">
+                                    👁️ View
+                                </a>
+                                <a href="/Category/Update/@cat.Id" class="btn-card btn-edit">
+                                    ✏️ Edit
+                                </a>
+                                <a href="/Category/Delete/@cat.Id" class="btn-card btn-delete"
+                                   onclick="return confirm('Delete this category?')">
+                                    🗑️ Delete
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-actions">
+                                <a href="/Category/Details/@cat.Id" class="btn-card btn-view" style="grid-column: 1 / -1;">
+                                    👁️ View Items
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <h3>No Categories Found</h3>
+            <p>There are no categories available yet.</p>
+            @if (User.IsInRole("Admin"))
+            {
+                <a href="/Category/Create" class="btn-action btn-add">
+                    ➕ Add First Category
+                </a>
+            }
+        </div>
+    }
 </div>

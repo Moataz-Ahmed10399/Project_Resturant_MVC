@@ -1,6 +1,287 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Privacy Policy";
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<p>Use this page to detail your site's privacy policy.</p> *@
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 60px 0;
+    }
+
+    .privacy-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .privacy-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        overflow: hidden;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .privacy-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 50px 40px;
+        text-align: center;
+    }
+
+        .privacy-header .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+    @@keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .privacy-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .privacy-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .privacy-content {
+        padding: 50px 60px;
+    }
+
+    @@media (max-width: 768px) {
+        .privacy-content
+
+    {
+        padding: 30px 25px;
+    }
+
+    }
+
+    .section {
+        margin-bottom: 40px;
+    }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section p {
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section ul {
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            padding-left: 30px;
+        }
+
+            .section ul li {
+                margin-bottom: 10px;
+            }
+
+    .highlight-box {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+        .highlight-box p {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+
+    .btn-back {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+    .last-updated {
+        text-align: center;
+        color: #999;
+        font-size: 0.9rem;
+        padding: 20px;
+        border-top: 1px solid #e0e0e0;
+    }
+</style>
+
+<div class="privacy-container">
+    <div class="privacy-card">
+        <div class="privacy-header">
+            <div class="icon">🔒</div>
+            <h1>Privacy Policy</h1>
+            <p>Your privacy is important to us</p>
+        </div>
+
+        <div class="privacy-content">
+            <div class="section">
+                <h2>🌟 Introduction</h2>
+                <p>
+                    Welcome to our Restaurant Management System. We are committed to protecting your personal information
+                    and your right to privacy. This privacy policy explains what information we collect, how we use it,
+                    and what rights you have in relation to it.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>📊 Information We Collect</h2>
+                <p>We collect several types of information for various purposes:</p>
+                <ul>
+                    <li><strong>Personal Information:</strong> Name, email address, phone number, and delivery address</li>
+                    <li><strong>Order Information:</strong> Order history, preferences, and payment details</li>
+                    <li><strong>Usage Data:</strong> Information about how you use our application</li>
+                    <li><strong>Account Information:</strong> Username, password (encrypted), and role assignments</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🎯 How We Use Your Information</h2>
+                <p>We use the collected information for the following purposes:</p>
+                <ul>
+                    <li>To process and deliver your orders</li>
+                    <li>To manage your account and provide customer support</li>
+                    <li>To send you important updates about your orders</li>
+                    <li>To improve our service and user experience</li>
+                    <li>To ensure the security of our platform</li>
+                    <li>To comply with legal obligations</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <p>💡 We will never sell your personal information to third parties!</p>
+            </div>
+
+            <div class="section">
+                <h2>🔐 Data Security</h2>
+                <p>
+                    We implement appropriate security measures to protect your personal information. This includes:
+                </p>
+                <ul>
+                    <li>Encrypted password storage using industry-standard algorithms</li>
+                    <li>Secure HTTPS connections for all data transmission</li>
+                    <li>Role-based access control to limit data access</li>
+                    <li>Regular security audits and updates</li>
+                    <li>Secure database management practices</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>👤 Your Rights</h2>
+                <p>You have the following rights regarding your personal information:</p>
+                <ul>
+                    <li><strong>Access:</strong> Request copies of your personal data</li>
+                    <li><strong>Correction:</strong> Request correction of inaccurate information</li>
+                    <li><strong>Deletion:</strong> Request deletion of your personal data</li>
+                    <li><strong>Restriction:</strong> Request restriction of processing your data</li>
+                    <li><strong>Objection:</strong> Object to our processing of your data</li>
+                    <li><strong>Portability:</strong> Request transfer of your data to another service</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🍪 Cookies and Tracking</h2>
+                <p>
+                    We use cookies and similar tracking technologies to track activity on our service and hold certain information.
+                    Cookies are files with small amount of data which may include an anonymous unique identifier.
+                    You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>👶 Children's Privacy</h2>
+                <p>
+                    Our service does not address anyone under the age of 13. We do not knowingly collect personally
+                    identifiable information from children under 13. If you are a parent or guardian and you are aware
+                    that your child has provided us with personal data, please contact us.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Changes to This Policy</h2>
+                <p>
+                    We may update our Privacy Policy from time to time. We will notify you of any changes by posting
+                    the new Privacy Policy on this page and updating the "Last Updated" date below. You are advised
+                    to review this Privacy Policy periodically for any changes.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>📞 Contact Us</h2>
+                <p>
+                    If you have any questions about this Privacy Policy, please contact us:
+                </p>
+                <div class="highlight-box">
+                    <p>
+                        📧 Email: privacy@restaurant.com<br>
+                        📱 Phone: +1 (555) 123-4567<br>
+                        📍 Address: 123 Restaurant Street, Food City, FC 12345
+                    </p>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="/" class="btn-back">⬅️ Back to Home</a>
+            </div>
+        </div>
+
+        <div class="last-updated">
+            <p>Last Updated: October 25, 2025</p>
+        </div>
+    </div>
+</div>

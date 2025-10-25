@@ -65,6 +65,7 @@ namespace Project_Resturant_MVC.Controllers
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
             await _userManager.AddToRoleAsync(user, newRole);
+            await _userManager.UpdateAsync(user);
 
             TempData["SuccessMessage"] = $"User '{user.UserName}' role changed to '{newRole}'";
             return RedirectToAction("GetAllUsers");

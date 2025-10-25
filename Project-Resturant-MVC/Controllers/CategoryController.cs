@@ -19,7 +19,7 @@ namespace Project_Resturant_MVC.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllCategory()
         {
-            var cat = await _Context.Categories.ToListAsync();
+            var cat = await _Context.Categories.Include(c => c.MenuItems).ToListAsync();
 
             return View(cat);
         }
