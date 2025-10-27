@@ -1,87 +1,4 @@
-﻿    @* @model List<MenuItem>
-@{
-    ViewData["Title"] = "All Menu Items";
-}
-<div class="w-100 m-0 p-0">
-    <h1 class="mb-4 text-center text-primary">🍕 Menu Items</h1>
-
-    <div class="d-flex justify-content-between mb-3 px-5">
-        @if (User.IsInRole("Admin"))
-        {
-            <a href="/MenuItem/Create" class="btn btn-success">+ Add New Item</a>
-        }
-        else
-        {
-            <span></span> 
-        }
-        <a href="/" class="btn btn-secondary">Back</a>
-    </div>
-
-    <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm w-100">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Quantity</th> 
-                <th>Prep Time (min)</th>
-                <th>Available</th>
-                <th>Category</th>
-                @if (User.IsInRole("Admin"))
-                {
-                    <th>Created</th>
-                    <th>Actions</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Id</td>
-                        <td>@item.Name</td>
-                        <td>@item.Description</td>
-                        <td>@item.Price.ToString("C")</td>
-                        <td>
-                            <span class="badge @(item.Quantity > 0 ? "bg-success" : "bg-danger")">
-                                @item.Quantity
-                            </span>
-                        </td>
-                        <td>@item.PreparationTimeMinutes</td>
-                        <td>
-                            <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
-                                @(item.IsAvailable ? "Available" : "Unavailable")
-                            </span>
-                        </td>
-                        <td>@item.Category?.Name</td>
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <td>@item.CreatedAt.ToShortDateString()</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="/MenuItem/Update/@item.Id" class="btn btn-primary btn-sm">Edit</a>
-                                    <a href="/MenuItem/DeleteMenuItem/@item.Id" class="btn btn-danger btn-sm">Delete</a>
-                                </div>
-                            </td>
-                        }
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="@(User.IsInRole("Admin") ? "10" : "8")" class="text-center text-muted">
-                        No menu items found.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div> *@
+﻿    
 @model List<MenuItem>
 @{
     ViewData["Title"] = "Menu Items";
@@ -355,9 +272,16 @@
             @foreach (var item in Model.OrderByDescending(m => m.IsAvailable))
             {
                 <div class="menu-card">
-                    <div class="card-image">
-                        🍽️
+                    @{
+                        var imgPath = string.IsNullOrWhiteSpace(item.ImagePath)
+                        ? "images/menu/default.png"
+                        : item.ImagePath.StartsWith("/") ? item.ImagePath.TrimStart('/') : item.ImagePath;
+                    }
+                    <div class="card-image" style="padding:0;">
+                        <img src="~/@imgPath" alt="@item.Name"
+                             style="width:100%; height:200px; object-fit:cover;">
                     </div>
+
                     <div class="card-body">
                         <div class="card-title">@item.Name</div>
                         <div class="card-description">@item.Description</div>

@@ -34,11 +34,13 @@ namespace Project_Resturant_MVC.ViewModel
         [Required(ErrorMessage = "PreparationTimeMinutes is requried")]
         [Range(1, 300)]
         public int PreparationTimeMinutes { get; set; }
-        // المسار اللي متخزن فعلاً للصورة القديمة
+       
+        
+        public string? ImagePath { get; set; }
+        [NotMapped]
 
-        //public string? ImageUrl { get; set; }
-        //// الملف اللي المستخدم بيرفعه
-        //public IFormFile? ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
+
 
     }
 }

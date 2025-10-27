@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project_Resturant_MVC.Context;
 using Project_Resturant_MVC.Models;
+using Project_Resturant_MVC.Services;
 using Project_Resturant_MVC.ViewModel;
 
 namespace Project_Resturant_MVC.Controllers
@@ -13,10 +14,13 @@ namespace Project_Resturant_MVC.Controllers
     public class MenuItemController : Controller
     {
         private readonly ResturantDbContext _Context;
+        private readonly IFileStorageService _fileService;
 
-        public MenuItemController(ResturantDbContext context)
+        public MenuItemController(ResturantDbContext context , IFileStorageService fileService)
         {
             _Context = context;
+            _fileService = fileService;
+
         }
 
         [AllowAnonymous]
@@ -73,9 +77,28 @@ namespace Project_Resturant_MVC.Controllers
                 Quantity = vmMenuItem.Quantity,
                  IsAvailable = vmMenuItem.Quantity > 0
             };
-                
+            if (vmMenuItem.ImageFile != null)
+            {
+                try
+                {
+                    mitem.ImagePath = await _fileService.SaveMenuImageAsync(vmMenuItem.ImageFile);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ImageFile", ex.Message);
+                    vmMenuItem.Categories = await GetAllCategories();
+                    return View(vmMenuItem);
+                }
+            }
+            else
+            {
+                mitem.ImagePath = "images/menu/default.png";
+            }
+
+
             await _Context.MenuItems.AddAsync(mitem);
             await _Context.SaveChangesAsync();
+
             TempData["SuccessMessage"] = "MenuItem created successfully!";
             return RedirectToAction("GetAllMenuItem");
 
@@ -138,6 +161,26 @@ namespace Project_Resturant_MVC.Controllers
             item.PreparationTimeMinutes = vmMenuItem.PreparationTimeMinutes;
             item.CategoryId = vmMenuItem.CategoryId;
             item.IsAvailable = item.Quantity > 0;
+
+            if (vmMenuItem.ImageFile != null)
+            {
+                try
+                {
+                    var newPath = await _fileService.SaveMenuImageAsync(vmMenuItem.ImageFile);
+                    if (!string.IsNullOrWhiteSpace(item.ImagePath) && !item.ImagePath.EndsWith("default.png"))
+                        await _fileService.DeleteAsync(item.ImagePath);
+
+                    item.ImagePath = newPath;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ImageFile", ex.Message);
+                    vmMenuItem.Categories = await GetAllCategories();
+                    ViewBag.MenuItemId = id;
+                    return View(vmMenuItem);
+                }
+            }
+
             await _Context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Menu item updated successfully!";

@@ -12,7 +12,7 @@
   
     <h2 class="text-center text-primary mb-4">Create New Menu Item</h2>
 
-    <form asp-controller="MenuItem" asp-action="Create" method="post" class="shadow p-4 rounded bg-light">
+    <form asp-controller="MenuItem" asp-action="Create" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div class="mb-3">
             <label asp-for="Name" class="form-label"></label>
@@ -50,6 +50,12 @@
                 <option value="">-- Select Category --</option>
             </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Item Image</label>
+            <input name="ImageFile" type="file" accept="image/*" class="form-control" />
+            @* <span asp-validation-for="ImageFile" class="text-danger"></span> *@
         </div>
 
         <button type="submit" class="btn btn-success w-100">Create Item</button>

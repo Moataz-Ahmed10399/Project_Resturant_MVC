@@ -19,8 +19,6 @@ namespace Project_Resturant_MVC.Controllers
         }
         //[HttpGet("create")]
         [HttpGet("addrole")]
-
-        [HttpGet("addrole")]
         public IActionResult AddRole() => View();
 
         [HttpPost("addrole")]

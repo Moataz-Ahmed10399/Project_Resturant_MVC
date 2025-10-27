@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\images\menuitems\" />
+    <Folder Include="wwwroot\images\menu\" />
   </ItemGroup>
 
 </Project>

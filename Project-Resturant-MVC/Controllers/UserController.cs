@@ -19,9 +19,7 @@ namespace Project_Resturant_MVC.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ResturantDbContext _db;
-        public UserController(UserManager<ApplicationUser> userManager,
-                       RoleManager<IdentityRole> roleManager,
-                       ResturantDbContext context)
+        public UserController(UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager,ResturantDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -63,9 +61,37 @@ namespace Project_Resturant_MVC.Controllers
         }
 
 
-        [HttpPost("changerole")]
+        //[HttpPost("changerole")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ChangeRole(string userId, string newRole)
+        //{
+        //    if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(newRole))
+        //    {
+        //        TempData["ErrorMessage"] = "Please choose a valid role.";
+        //        return RedirectToAction("GetAllUsers");
+        //    }
+
+        //    var user = await _userManager.FindByIdAsync(userId);
+        //    if (user == null) return NotFound();
+
+        //    if (!await _roleManager.RoleExistsAsync(newRole))
+        //    {
+        //        TempData["ErrorMessage"] = $"Role '{newRole}' does not exist.";
+        //        return RedirectToAction("GetAllUsers");
+        //    }
+
+        //    var currentRoles = await _userManager.GetRolesAsync(user);
+        //    if (currentRoles.Any())
+        //        await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+        //    await _userManager.AddToRoleAsync(user, newRole);
+
+        //    TempData["SuccessMessage"] = $"User '{user.UserName}' role changed to '{newRole}'.";
+        //    return RedirectToAction("GetAllUsers");
+        //}
+        [HttpPost("updateRole")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeRole(string userId, string newRole)
+        public async Task<IActionResult> UpdateRole(string userId, string newRole)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(newRole))
             {

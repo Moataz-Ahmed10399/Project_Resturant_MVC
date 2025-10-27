@@ -21,13 +21,20 @@ namespace Project_Resturant_MVC.Models
 
         [Range(1, 300)]
         public int PreparationTimeMinutes { get; set; }
-        //[StringLength(255)]
-        //public string? ImageUrl { get; set; }
+      
         public bool IsAvailable { get; set; } = true;
 
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
+
+
+        public string? ImagePath { get; set; }
+        [NotMapped]
+
+        public IFormFile? ImageFile { get; set; }
+
+
     }
 }

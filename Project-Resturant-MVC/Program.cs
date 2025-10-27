@@ -19,6 +19,8 @@ namespace Project_Resturant_MVC
 
             builder.Services.AddHostedService<Project_Resturant_MVC.Services.OrderStatusBackgroundService>();
 
+            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
             {
@@ -45,6 +47,10 @@ namespace Project_Resturant_MVC
             //    options.MultipartHeadersLengthLimit = int.MaxValue;
             //});
 
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // 20 MB
+            });
 
             var app = builder.Build();
 

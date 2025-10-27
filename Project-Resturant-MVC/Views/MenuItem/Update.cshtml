@@ -225,7 +225,7 @@
         </div>
 
         <div class="form-container">
-            <form asp-controller="MenuItem" asp-action="Update" asp-route-id="@ViewBag.MenuItemId" method="post">
+            <form asp-controller="MenuItem" asp-action="Update" asp-route-id="@ViewBag.MenuItemId" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@ViewBag.MenuItemId" />
 
@@ -281,6 +281,19 @@
                         </select>
                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                     </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <div class="mb-3">
+                        <img src="~/@Model.ImagePath" alt="Current Image" style="max-width:180px;border-radius:10px;" />
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label">Replace Image (optional)</label>
+                    <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
